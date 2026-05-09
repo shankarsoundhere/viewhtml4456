@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Shankar Tent House</title>
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#28a745">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+
+<style>
+body{
+margin:0;
+font-family:Arial;
+background:#f1f3f6;
+}
+
+/* LED */
+.led-board{
+width:100%;
+overflow:hidden;
+white-space:nowrap;
+background:black;
+padding:12px 0;
+}
+
+.led-text{
+display:inline-block;
+font-size:22px;
+font-weight:bold;
+animation:scrollText 12s linear infinite;
+}
+
+@keyframes scrollText{
+0%{transform:translateX(100%);}
+100%{transform:translateX(-100%);}
+}
+
+.saffron{color:orange;}
+.white{color:white;}
+.green{color:#00ff00;}
+
+/* CARD */
+.container{
+padding:10px;
+}
+
+.card{
+background:white;
+margin-bottom:12px;
+padding:14px;
+border-radius:10px;
+box-shadow:0 2px 6px rgba(0,0,0,0.1);
+cursor:pointer;
+transition:0.3s;
+font-size:18px;
+}
+
+.card:hover{
+transform:scale(1.03);
+}
+
+/* DESKTOP */
+@media(min-width:700px){
+.container{
+max-width:500px;
+margin:auto;
+}
+}
+</style>
+</head>
+
+<body>
+
+<div class="led-board">
+<div class="led-text">
+<span class="saffron">शंकर टेंट हाउस</span>
+<span class="white">लखीसराय</span>
+<span class="green">7004814456 , 6200164687</span>
+</div>
+</div>
+
+<div class="container">
+
+<div class="card" onclick="location.href='light.html'">
+💡 लाइट मिस्त्री
+</div>
+
+<div class="card" onclick="location.href='jharkila.html'">
+👷 झारकिला लेबर
+</div>
+
+<div class="card" onclick="location.href='pandal.html'">
+🏕 पंडाल मिस्त्री
+</div>
+
+<div class="card" onclick="location.href='bakaya.html'">
+📖 बकाया
+</div>
+
+<div class="card" onclick="location.href='sound.html'">
+🔊 Sound System
+</div>
+
+</div>
+
+<script src="pwa.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>झारकिला लेबर</title>
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#28a745">
+
+<style>
+body{
+font-family:Arial;
+margin:10px;
+}
+
+/* scroll */
+.table-container{
+overflow-x:auto;
+}
+
+/* table */
+table{
+border-collapse:collapse;
+min-width:700px;
+width:100%;
+}
+
+td{
+border:1px solid black;
+padding:8px;
+text-align:center;
+font-size:14px;
+white-space:nowrap;
+}
+
+/* header row */
+.head td{
+font-weight:bold;
+background:#eee;
+}
+
+/* note */
+.noteBox{
+border:1px solid black;
+padding:10px;
+min-height:60px;
+}
+
+ul{
+margin:0;
+padding-left:20px;
+text-align:left;
+}
+</style>
+</head>
+
+<body>
+
+<h3 align="center">👷 झारकिला लेबर</h3>
+
+<div class="table-container">
+<table id="mainTable">
+
+<tr class="head">
+<td>तारीख</td>
+<td>नाम 1</td>
+<td>नाम 2</td>
+<td>नाम 3</td>
+<td>नाम 4</td>
+<td>नाम 5</td>
+<td>नाम 6</td>
+</tr>
+
+</table>
+</div>
+
+<h4>Note</h4>
+
+<div class="noteBox">
+<ul id="noteList"></ul>
+</div>
+
+<center><a href="index.html">⬅ वापस जाए</a></center>
+
+<script type="module">
+
+import {
+db,
+collection,
+onSnapshot
+} from "./firebase.js";
+
+/* MAIN DATA */
+onSnapshot(collection(db,"jharkila"),(snap)=>{
+
+let html=`
+<tr class="head">
+<td>तारीख</td>
+<td>नाम 1</td>
+<td>नाम 2</td>
+<td>नाम 3</td>
+<td>नाम 4</td>
+<td>नाम 5</td>
+<td>नाम 6</td>
+</tr>
+`;
+
+snap.forEach(d=>{
+let x=d.data();
+
+html+=`
+<tr>
+<td>${x.date || ""}</td>
+<td>${x.n1 || ""}</td>
+<td>${x.n2 || ""}</td>
+<td>${x.n3 || ""}</td>
+<td>${x.n4 || ""}</td>
+<td>${x.n5 || ""}</td>
+<td>${x.n6 || ""}</td>
+</tr>
+`;
+});
+
+document.getElementById("mainTable").innerHTML=html;
+
+});
+
+/* NOTE */
+onSnapshot(collection(db,"jharkila_note"),(snap)=>{
+
+let noteHTML="";
+
+snap.forEach(d=>{
+let n=d.data();
+if(n.text){
+noteHTML+=`<li>${n.text}</li>`;
+}
+});
+
+document.getElementById("noteList").innerHTML=noteHTML;
+
+});
+
+</script>
+
+<script src="pwa.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Shankar Tent House</title>
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#28a745">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+
+<style>
+body{
+font-family:Arial,sans-serif;
+margin:0;
+padding:10px;
+background:white;
+color:black;
+}
+
+.container{
+width:100%;
+max-width:1400px;
+margin:auto;
+overflow-x:auto;
+}
+
+.led-board{
+width:100%;
+min-width:600px;
+overflow:hidden;
+white-space:nowrap;
+background:black;
+padding:15px 0;
+margin-bottom:20px;
+border-radius:10px;
+}
+
+.led-text{
+display:inline-block;
+font-size:36px;
+font-weight:bold;
+animation:scrollText 12s linear infinite;
+}
+
+@keyframes scrollText{
+0%{transform:translateX(100%);}
+100%{transform:translateX(-100%);}
+}
+
+.saffron{color:orange;}
+.white{color:white;}
+.green{color:#00ff00;}
+
+.table-container{
+width:100%;
+overflow-x:auto;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+table-layout:auto;
+}
+
+th,td{
+padding:6px 4px;
+border:1px solid #ddd;
+font-size:13px;
+white-space:nowrap;
+}
+
+th:nth-child(1),td:nth-child(1){
+text-align:center;
+}
+
+th:nth-child(2),td:nth-child(2),
+th:nth-child(3),td:nth-child(3){
+text-align:left;
+padding-left:8px;
+}
+
+th{
+background:#4facfe;
+color:white;
+font-size:40px;
+}
+
+tr{
+cursor:pointer;
+transition:0.3s;
+}
+
+tr:nth-child(even){
+background:#f2f2f2;
+}
+
+tbody tr:hover{
+background:#ddd;
+}
+
+.back{
+display:block;
+text-align:center;
+margin:15px 0;
+text-decoration:none;
+font-size:16px;
+}
+
+@media(max-width:600px){
+.led-text{font-size:18px;}
+
+th,td{
+font-size:11px;
+padding:6px;
+}
+
+th{
+font-size:18px;
+}
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="led-board">
+<div class="led-text">
+<span class="saffron">शंकर टेंट हाउस</span>
+<span class="white">लखीसराय</span>
+<span class="green">7004814456 , 6200164687</span>
+</div>
+</div>
+
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>दिनांक</th>
+<th>काम</th>
+<th>कहां जाएगा</th>
+</tr>
+</thead>
+<tbody id="tbody"></tbody>
+</table>
+</div>
+
+<a href="index.html" class="back">⬅ वापस जाए</a>
+
+</div>
+
+<script type="module">
+
+import {
+db,
+collection,
+onSnapshot
+} from "./firebase.js";
+
+const colRef = collection(db,"main_list");
+
+function getSortDate(date){
+let p=(date||"").split("-");
+if(p.length!==3) return new Date(9999,11,31);
+return new Date(p[2],p[1]-1,p[0]);
+}
+
+onSnapshot(colRef,(snap)=>{
+
+let arr=[];
+
+snap.forEach(d=>{
+let x=d.data();
+
+arr.push({
+date:x.date||"",
+work:x.work||"",
+place:x.place||"",
+link:x.link||"",
+sort:getSortDate(x.date)
+});
+});
+
+arr.sort((a,b)=>a.sort-b.sort);
+
+let html="";
+
+arr.forEach(x=>{
+html+=`
+<tr onclick="openLink('${x.link||""}')">
+<td>${x.date}</td>
+<td>${x.work}</td>
+<td>${x.place}</td>
+</tr>
+`;
+});
+
+document.getElementById("tbody").innerHTML=html;
+
+});
+
+window.openLink=function(link){
+if(link){
+window.open(link,"_blank");
+}
+}
+
+</script>
+
+<script src="pwa.js"></script>
+
+</body>
+</html>

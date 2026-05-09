@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Dashboard</title>
+
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#28a745">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+
+<style>
+body{
+font-family:Arial;
+background:#dcdde1;
+padding:10px;
+}
+
+.box{
+max-width:600px;
+margin:auto;
+}
+
+/* CARD BUTTON */
+.card{
+background:#eaeaea;
+padding:20px;
+margin:15px 0;
+border-radius:20px;
+font-size:22px;
+display:flex;
+align-items:center;
+gap:15px;
+cursor:pointer;
+box-shadow:0 4px 10px rgba(0,0,0,0.1);
+transition:0.3s;
+}
+
+.card:hover{
+background:#dfe6e9;
+transform:scale(1.02);
+}
+
+/* ICON */
+.icon{
+font-size:30px;
+}
+
+/* LOGOUT */
+.logout{
+background:#ff4d4d;
+color:white;
+justify-content:center;
+}
+</style>
+
+</head>
+
+<body>
+
+<script>
+// login protection
+if(localStorage.getItem("login") !== "true"){
+location.href = "login.html";
+}
+</script>
+
+<div class="box">
+
+<div class="card" onclick="go('light.html')">
+<span class="icon">💡</span>
+<span>लाइट मिस्त्री</span>
+</div>
+
+<div class="card" onclick="go('jharkila.html')">
+<span class="icon">👷</span>
+<span>झारकिला लेबर</span>
+</div>
+
+<div class="card" onclick="go('pandal.html')">
+<span class="icon">⛺</span>
+<span>पंडाल मिस्त्री</span>
+</div>
+
+<div class="card" onclick="go('bakaya.html')">
+<span class="icon">📖</span>
+<span>बकाया</span>
+</div>
+
+<div class="card" onclick="go('sound.html')">
+<span class="icon">📡</span>
+<span>Sound System</span>
+</div>
+
+<div class="card logout" onclick="logout()">
+🚪 Logout
+</div>
+
+</div>
+
+<script>
+function go(page){
+location.href = page;
+}
+
+function logout(){
+localStorage.removeItem("login");
+location.href = "login.html";
+}
+</script>
+
+<!-- PWA Script -->
+<script src="pwa.js"></script>
+
+</body>
+</html>

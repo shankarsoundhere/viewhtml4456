@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>बकाया लिस्ट</title>
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#28a745">
+
+<style>
+body{
+font-family:Arial;
+background:#dcdde1;
+padding:10px;
+}
+
+.box{
+background:#f1f2f6;
+padding:12px;
+margin:12px 0;
+border-radius:15px;
+box-shadow:0 4px 8px rgba(0,0,0,0.1);
+}
+
+.top{
+display:flex;
+gap:10px;
+font-size:14px;
+font-weight:bold;
+flex-wrap:wrap;
+}
+
+.top span{
+background:#dfe4ea;
+padding:3px 8px;
+border-radius:8px;
+}
+
+.detail{
+margin-top:6px;
+font-size:13px;
+word-break:break-word;
+}
+
+.bottom{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-top:8px;
+gap:10px;
+}
+
+.nameBox{
+font-size:14px;
+}
+
+.number{
+display:none;
+font-size:13px;
+color:blue;
+margin-top:2px;
+}
+
+.toggle{
+font-size:12px;
+color:blue;
+cursor:pointer;
+margin-left:5px;
+}
+
+.btn{
+padding:7px 12px;
+background:linear-gradient(45deg,#28a745,#34d058);
+color:white;
+border-radius:25px;
+text-decoration:none;
+font-size:12px;
+font-weight:bold;
+}
+</style>
+</head>
+
+<body>
+
+<h3 style="text-align:center;">💰 बकाया लिस्ट</h3>
+
+<div id="list"></div>
+
+<script type="module">
+
+import {
+db,
+collection,
+onSnapshot
+} from "./firebase.js";
+
+const colRef = collection(db,"bakaya");
+
+onSnapshot(colRef,(snap)=>{
+
+let html="";
+let i=0;
+
+snap.forEach(d=>{
+let x=d.data();
+
+html+=`
+<div class="box">
+
+<div class="top">
+<span>${x.date||"-"}</span>
+<span>${x.work||"-"}</span>
+<span>${x.place||"-"}</span>
+</div>
+
+<div class="detail">${x.amount||"-"}</div>
+
+<div class="bottom">
+
+<div class="nameBox">
+👤 ${x.name||"-"}
+<span class="toggle" onclick="toggleNumber(${i})">Show</span><br>
+<span class="number" id="num${i}">📞 ${x.phone||"-"}</span>
+</div>
+
+<a href="tel:${x.phone||""}" class="btn">📞 Call</a>
+
+</div>
+
+</div>
+`;
+
+i++;
+});
+
+document.getElementById("list").innerHTML=html;
+
+});
+
+/* SHOW / HIDE NUMBER */
+window.toggleNumber = function(i){
+let el = document.getElementById("num"+i);
+el.style.display = (el.style.display==="block") ? "none" : "block";
+}
+
+</script>
+
+<script src="pwa.js"></script>
+
+</body>
+</html>
