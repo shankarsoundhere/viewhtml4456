@@ -7,97 +7,56 @@
 <title>Shankar Tent House</title>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="favicon.png">
-<link rel="apple-touch-icon" href="icon-192.png">
 
+<!-- Firebase CDN -->
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
+<!-- Your firebase config -->
+<script src="firebase.js"></script>
+
 <style>
 body{
-    font-family:Arial,sans-serif;
-    margin:0;
+    font-family:Arial;
     padding:10px;
     background:white;
-    color:black;
 }
 .container{
-    width:100%;
     max-width:1400px;
     margin:auto;
-    overflow-x:auto;
 }
 .led-board{
-    width:100%;
-    overflow:hidden;
-    white-space:nowrap;
     background:black;
-    padding:15px 0;
-    margin-bottom:20px;
+    padding:15px;
     border-radius:10px;
+    overflow:hidden;
 }
 .led-text{
-    display:inline-block;
-    font-size:36px;
-    font-weight:bold;
-    animation:scrollText 12s linear infinite;
+    color:white;
+    font-size:28px;
+    animation:scroll 10s linear infinite;
 }
-@keyframes scrollText{
-    0%{transform:translateX(100%);}
-    100%{transform:translateX(-100%);}
-}
-.saffron{color:orange;}
-.white{color:white;}
-.green{color:#00ff00;}
-
-.table-container{
-    width:100%;
-    overflow-x:auto;
+@keyframes scroll{
+    0%{transform:translateX(100%)}
+    100%{transform:translateX(-100%)}
 }
 table{
     width:100%;
     border-collapse:collapse;
-    table-layout:auto;
+    margin-top:15px;
 }
 th,td{
-    padding:6px 8px;
     border:1px solid #ddd;
-    font-size:13px;
-    white-space:nowrap;
+    padding:8px;
+    font-size:14px;
 }
 th{
     background:#4facfe;
     color:white;
-    font-size:34px;
 }
-td:nth-child(1),th:nth-child(1){
-    text-align:center;
-}
-td:nth-child(2),td:nth-child(3),
-th:nth-child(2),th:nth-child(3){
-    text-align:left;
-}
-tr{
+tr:hover{
+    background:#eee;
     cursor:pointer;
-    transition:.3s;
-}
-tbody tr:nth-child(even){
-    background:#f2f2f2;
-}
-tbody tr:hover{
-    background:#ddd;
-}
-.empty{
-    text-align:center;
-    font-size:18px;
-    padding:20px;
-}
-@media(max-width:600px){
-    .led-text{font-size:18px;}
-    th{font-size:18px;}
-    th,td{
-        font-size:11px;
-        padding:6px;
-    }
 }
 </style>
 </head>
@@ -106,120 +65,84 @@ tbody tr:hover{
 
 <div class="container">
 
-    <div class="led-board">
-        <div class="led-text">
-            <span class="saffron">शंकर टेंट हाउस</span>
-            <span class="white">लखीसराय</span>
-            <span class="green">7004814456 , 6200164687</span>
-        </div>
-    </div>
+<div class="led-board">
+<div class="led-text">
+शंकर टेंट हाउस | 7004814456
+</div>
+</div>
 
-    <div class="table-container">
-        <table>
-            <thead>
-                <tr>
-                    <th>दिनांक</th>
-                    <th>काम</th>
-                    <th>कहां जाएगा</th>
-                </tr>
-            </thead>
-            <tbody id="dataBody">
-                <tr>
-                    <td colspan="3" class="empty">Loading...</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+<table>
+<thead>
+<tr>
+<th>दिनांक</th>
+<th>काम</th>
+<th>कहां जाएगा</th>
+</tr>
+</thead>
+
+<tbody id="dataBody">
+<tr><td colspan="3">Loading...</td></tr>
+</tbody>
+
+</table>
 
 </div>
 
 <script>
-const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_PROJECT.firebaseapp.com",
-    databaseURL: "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
-    projectId: "YOUR_PROJECT",
-    storageBucket: "YOUR_PROJECT.appspot.com",
-    messagingSenderId: "YOUR_SENDER_ID",
-    appId: "YOUR_APP_ID"
-};
-
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
-
-/*
-Admin Panel में data इसी path में save होना चाहिए:
-
-mainList
- └── autoId
-     ├── date: "20-04-2026"
-     ├── work: "D.J"
-     ├── place: "मोरमा से कजरा"
-     └── link: "https://drive.google.com/..."
-*/
 
 const dataBody = document.getElementById("dataBody");
-const DATA_PATH = "mainList";
 
-function dateToNumber(dateStr){
-    if(!dateStr) return 0;
-    const parts = dateStr.split("-");
-    if(parts.length !== 3) return 0;
+// Admin panel same path use करे
+const PATH = "mainList";
 
-    const d = parts[0].padStart(2,"0");
-    const m = parts[1].padStart(2,"0");
-    const y = parts[2];
-
-    return Number(y + m + d);
+// date sorting function
+function dateNum(d){
+    if(!d) return 0;
+    let [dd,mm,yy] = d.split("-");
+    return Number(yy+mm+dd);
 }
 
-function openLink(link){
-    if(link && link.trim() !== ""){
-        window.open(link, "_blank");
-    }else{
-        alert("इस item का link अभी add नहीं है");
-    }
-}
+// load data
+db.ref(PATH).on("value", snap => {
 
-db.ref(DATA_PATH).on("value", snapshot => {
     dataBody.innerHTML = "";
 
-    if(!snapshot.exists()){
-        dataBody.innerHTML = `
-            <tr>
-                <td colspan="3" class="empty">अभी कोई data नहीं है</td>
-            </tr>
-        `;
+    if(!snap.exists()){
+        dataBody.innerHTML = "<tr><td colspan='3'>No Data</td></tr>";
         return;
     }
 
-    let list = [];
+    let arr = [];
 
-    snapshot.forEach(child => {
-        const item = child.val();
-        list.push({
-            date: item.date || "",
-            work: item.work || "",
-            place: item.place || "",
-            link: item.link || ""
-        });
+    snap.forEach(c=>{
+        arr.push(c.val());
     });
 
-    list.sort((a,b) => dateToNumber(a.date) - dateToNumber(b.date));
+    // sort by date
+    arr.sort((a,b)=> dateNum(a.date) - dateNum(b.date));
 
-    list.forEach(item => {
-        const tr = document.createElement("tr");
-        tr.onclick = () => openLink(item.link);
+    arr.forEach(item=>{
+        let tr = document.createElement("tr");
+
+        tr.onclick = ()=>{
+            if(item.link){
+                window.open(item.link,"_blank");
+            }else{
+                alert("Link नहीं है");
+            }
+        };
 
         tr.innerHTML = `
-            <td>${item.date}</td>
-            <td>${item.work}</td>
-            <td>${item.place}</td>
+        <td>${item.date||""}</td>
+        <td>${item.work||""}</td>
+        <td>${item.place||""}</td>
         `;
 
         dataBody.appendChild(tr);
     });
+
 });
+
 </script>
 
 </body>
