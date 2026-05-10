@@ -9,11 +9,6 @@
 <link rel="icon" href="favicon.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 
-<!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-<script src="firebase.js"></script>
-
 <style>
 body {
     font-family: Arial;
@@ -117,7 +112,7 @@ tr:hover {
 </thead>
 
 <tbody id="dataBody">
-<!-- खाली रहेगा -->
+<!-- Firebase data यहां आएगा -->
 </tbody>
 
 </table>
@@ -125,61 +120,82 @@ tr:hover {
 
 </div>
 
-<script>
+<script type="module">
+import {
+    db,
+    collection,
+    onSnapshot
+} from "./firebase.js";
+
 const dataBody = document.getElementById("dataBody");
-const PATH = "mainList";
+const colRef = collection(db, "main_list");
 
 function escapeHTML(text){
     return String(text || "")
         .replaceAll("&", "&amp;")
         .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;");
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
 }
 
 function dateNum(d){
     if(!d) return 0;
-    let [dd,mm,yy] = d.split("-");
+
+    let [dd, mm, yy] = d.split("-");
     if(!dd || !mm || !yy) return 0;
-    return Number(yy + mm.padStart(2,"0") + dd.padStart(2,"0"));
+
+    if(yy.length === 2){
+        yy = "20" + yy;
+    }
+
+    return Number(
+        yy +
+        mm.padStart(2, "0") +
+        dd.padStart(2, "0")
+    );
 }
 
 function openLink(link){
-    if(link){
-        window.open(link, "_blank");
+    if(link && link.trim() !== ""){
+        window.open(link.trim(), "_blank");
     }
 }
 
-db.ref(PATH).on("value", snap => {
-
+onSnapshot(colRef, (snap) => {
     dataBody.innerHTML = "";
-
-    if(!snap.exists()){
-        return; // कुछ नहीं दिखेगा
-    }
 
     let arr = [];
 
-    snap.forEach(c=>{
-        arr.push(c.val());
+    snap.forEach((doc) => {
+        let item = doc.data() || {};
+
+        arr.push({
+            date: item.date || "",
+            work: item.work || "",
+            place: item.place || "",
+            link: item.link || ""
+        });
     });
 
-    // sort by date
-    arr.sort((a,b)=> dateNum(a.date) - dateNum(b.date));
+    arr.sort((a, b) => dateNum(a.date) - dateNum(b.date));
 
-    arr.forEach(item=>{
+    arr.forEach((item) => {
         let tr = document.createElement("tr");
 
-        tr.onclick = ()=> openLink(item.link);
+        tr.onclick = () => openLink(item.link);
 
         tr.innerHTML = `
-        <td>${escapeHTML(item.date)}</td>
-        <td>${escapeHTML(item.work)}</td>
-        <td>${escapeHTML(item.place)}</td>
+            <td>${escapeHTML(item.date)}</td>
+            <td>${escapeHTML(item.work)}</td>
+            <td>${escapeHTML(item.place)}</td>
         `;
 
         dataBody.appendChild(tr);
     });
 
+}, (error) => {
+    console.error("Firebase Error:", error);
 });
 </script>
 
