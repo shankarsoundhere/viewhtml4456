@@ -7,56 +7,88 @@
 <title>Shankar Tent House</title>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="favicon.png">
+<link rel="apple-touch-icon" href="icon-192.png">
 
-<!-- Firebase CDN -->
+<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-
-<!-- Your firebase config -->
 <script src="firebase.js"></script>
 
 <style>
-body{
-    font-family:Arial;
-    padding:10px;
-    background:white;
+body {
+    font-family: Arial;
+    margin: 0;
+    padding: 10px;
 }
-.container{
-    max-width:1400px;
-    margin:auto;
+
+.container {
+    max-width: 1400px;
+    margin: auto;
 }
-.led-board{
-    background:black;
-    padding:15px;
-    border-radius:10px;
-    overflow:hidden;
+
+/* LED */
+.led-board {
+    overflow: hidden;
+    white-space: nowrap;
+    background: black;
+    padding: 15px 0;
+    margin-bottom: 20px;
+    border-radius: 10px;
 }
-.led-text{
-    color:white;
-    font-size:28px;
-    animation:scroll 10s linear infinite;
+
+.led-text {
+    display: inline-block;
+    font-size: 36px;
+    font-weight: bold;
+    animation: scrollText 12s linear infinite;
 }
-@keyframes scroll{
-    0%{transform:translateX(100%)}
-    100%{transform:translateX(-100%)}
+
+@keyframes scrollText {
+    0% { transform: translateX(100%); }
+    100% { transform: translateX(-100%); }
 }
-table{
-    width:100%;
-    border-collapse:collapse;
-    margin-top:15px;
+
+.saffron { color: orange; }
+.white { color: white; }
+.green { color: #00ff00; }
+
+/* Table */
+.table-container {
+    overflow-x: auto;
 }
-th,td{
-    border:1px solid #ddd;
-    padding:8px;
-    font-size:14px;
+
+table {
+    width: max-content;
+    min-width: 100%;
+    border-collapse: collapse;
 }
-th{
-    background:#4facfe;
-    color:white;
+
+th, td {
+    padding: 6px 10px;
+    border: 1px solid #ddd;
+    font-size: 13px;
+    white-space: nowrap;
 }
-tr:hover{
-    background:#eee;
-    cursor:pointer;
+
+th {
+    background: #4facfe;
+    color: white;
+    font-size: 18px;
+}
+
+td:nth-child(1) { text-align: center; }
+td:nth-child(2), td:nth-child(3) { text-align: left; }
+
+tr:hover {
+    background: #ddd;
+    cursor: pointer;
+}
+
+/* Mobile */
+@media(max-width:600px){
+    .led-text { font-size: 18px; }
+    th, td { font-size: 11px; }
+    th { font-size: 14px; }
 }
 </style>
 </head>
@@ -66,50 +98,63 @@ tr:hover{
 <div class="container">
 
 <div class="led-board">
-<div class="led-text">
-शंकर टेंट हाउस | 7004814456
-</div>
+    <div class="led-text">
+        <span class="saffron">शंकर टेंट हाउस</span> 
+        <span class="white">लखीसराय</span> 
+        <span class="green">7004814456 , 6200164687</span>
+    </div>
 </div>
 
+<div class="table-container">
 <table>
+
 <thead>
 <tr>
-<th>दिनांक</th>
-<th>काम</th>
-<th>कहां जाएगा</th>
+    <th>दिनांक</th>
+    <th>काम</th>
+    <th>कहां जाएगा</th>
 </tr>
 </thead>
 
 <tbody id="dataBody">
-<tr><td colspan="3">Loading...</td></tr>
+<!-- खाली रहेगा -->
 </tbody>
 
 </table>
+</div>
 
 </div>
 
 <script>
-
 const dataBody = document.getElementById("dataBody");
-
-// Admin panel same path use करे
 const PATH = "mainList";
 
-// date sorting function
+function escapeHTML(text){
+    return String(text || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;");
+}
+
 function dateNum(d){
     if(!d) return 0;
     let [dd,mm,yy] = d.split("-");
-    return Number(yy+mm+dd);
+    if(!dd || !mm || !yy) return 0;
+    return Number(yy + mm.padStart(2,"0") + dd.padStart(2,"0"));
 }
 
-// load data
+function openLink(link){
+    if(link){
+        window.open(link, "_blank");
+    }
+}
+
 db.ref(PATH).on("value", snap => {
 
     dataBody.innerHTML = "";
 
     if(!snap.exists()){
-        dataBody.innerHTML = "<tr><td colspan='3'>No Data</td></tr>";
-        return;
+        return; // कुछ नहीं दिखेगा
     }
 
     let arr = [];
@@ -124,25 +169,18 @@ db.ref(PATH).on("value", snap => {
     arr.forEach(item=>{
         let tr = document.createElement("tr");
 
-        tr.onclick = ()=>{
-            if(item.link){
-                window.open(item.link,"_blank");
-            }else{
-                alert("Link नहीं है");
-            }
-        };
+        tr.onclick = ()=> openLink(item.link);
 
         tr.innerHTML = `
-        <td>${item.date||""}</td>
-        <td>${item.work||""}</td>
-        <td>${item.place||""}</td>
+        <td>${escapeHTML(item.date)}</td>
+        <td>${escapeHTML(item.work)}</td>
+        <td>${escapeHTML(item.place)}</td>
         `;
 
         dataBody.appendChild(tr);
     });
 
 });
-
 </script>
 
 </body>
