@@ -78,7 +78,7 @@ onSnapshot
 } from "./firebase.js";
 
 const params = new URLSearchParams(window.location.search);
-const slot = params.get("slot") || "1";
+const slot = params.get("slot") || "2";
 
 const colRef = collection(db, "light_slot_" + slot);
 
