@@ -12,32 +12,29 @@
 <style>
 body{
   font-family: Arial, sans-serif;
-  margin:0;
-  padding:15px;
+  margin:10px;
   background:#fff;
   color:#000;
 }
 
 h3{
   text-align:center;
-  margin:0 0 15px 0;
-  font-size:22px;
+  margin:0 0 10px 0;
+  font-size:18px;
 }
 
-/* Main Table */
 table{
   width:100%;
   border-collapse:collapse;
   table-layout:fixed;
-  margin-bottom:18px;
-  border:2px solid #000;
+  margin-bottom:15px;
 }
 
 td{
-  border:2px solid #000;
-  padding:14px 18px;
-  font-size:28px;
-  line-height:1.25;
+  border:1px solid #000;
+  padding:6px 10px;
+  font-size:14px;
+  line-height:1.35;
   vertical-align:middle;
   word-break:break-word;
 }
@@ -57,50 +54,30 @@ td:nth-child(3){
   text-align:left;
 }
 
-/* Notes */
 .noteBox{
-  border:2px solid #000;
-  padding:18px 22px;
-  margin-top:12px;
+  border:1px solid #000;
+  padding:10px 14px;
+  margin-top:10px;
   display:none;
 }
 
 ul{
   margin:0;
-  padding-left:28px;
+  padding-left:22px;
 }
 
 li{
-  font-size:27px;
+  font-size:14px;
   line-height:1.45;
-  margin-bottom:10px;
+  margin-bottom:5px;
 }
 
 .back{
   display:block;
   text-align:center;
-  margin-top:15px;
+  margin-top:10px;
   text-decoration:none;
-  font-size:16px;
-}
-
-@media(max-width:600px){
-  body{
-    padding:8px;
-  }
-
-  td{
-    font-size:18px;
-    padding:9px 10px;
-  }
-
-  li{
-    font-size:18px;
-  }
-
-  .noteBox{
-    padding:12px 14px;
-  }
+  font-size:14px;
 }
 </style>
 </head>
@@ -118,7 +95,6 @@ li{
 <a href="light.html" class="back">⬅ वापस जाए</a>
 
 <script type="module">
-
 import {
   db,
   collection,
@@ -205,7 +181,6 @@ onSnapshot(colRef, (snap) => {
   }
 
 });
-
 </script>
 
 <script src="pwa.js"></script>
