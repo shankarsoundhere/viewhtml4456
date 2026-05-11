@@ -81,6 +81,21 @@ onSnapshot
 /* 🔥 SLOT 1 COLLECTION */
 const params = new URLSearchParams(window.location.search);
 const slot = params.get("slot") || "1";
+const names = {
+  "1": "राकेश मिस्त्री",
+  "2": "चन्दन मिस्त्री",
+  "3": "नुनु",
+  "4": "विकाश ड्राइवर",
+  "5": "बब्लू ड्राइवर",
+  "6": "Slot 6",
+  "7": "Slot 7",
+  "8": "Slot 8",
+  "9": "Slot 9",
+  "10": "Slot 10"
+};
+
+document.title = names[slot] || "लाइट मिस्त्री";
+document.querySelector("h3").innerText = names[slot] || "लाइट मिस्त्री";
 
 const colRef = collection(db, "light_slot_" + slot);
 
