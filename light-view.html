@@ -4,68 +4,115 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>राकेश मिस्त्री</title>
+<title>लाइट मिस्त्री</title>
 
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#6200ea">
 
 <style>
-body { font-family: Arial; margin:10px; }
+body{
+  font-family: Arial, sans-serif;
+  margin:0;
+  padding:15px;
+  background:#fff;
+  color:#000;
+}
 
 h3{
-text-align:center;
+  text-align:center;
+  margin:0 0 15px 0;
+  font-size:22px;
 }
 
-table {
-border-collapse: collapse;
-width:100%;
-margin-bottom:15px;
+/* Main Table */
+table{
+  width:100%;
+  border-collapse:collapse;
+  table-layout:fixed;
+  margin-bottom:18px;
+  border:2px solid #000;
 }
 
-td {
-border:1px solid black;
-padding:6px;
-font-size:14px;
+td{
+  border:2px solid #000;
+  padding:14px 18px;
+  font-size:28px;
+  line-height:1.25;
+  vertical-align:middle;
+  word-break:break-word;
 }
 
 td:nth-child(1){
-text-align:center;
+  width:30%;
+  text-align:center;
 }
 
-td:nth-child(2),
+td:nth-child(2){
+  width:27%;
+  text-align:left;
+}
+
 td:nth-child(3){
-text-align:left;
-padding-left:10px;
+  width:43%;
+  text-align:left;
 }
 
+/* Notes */
 .noteBox{
-border:1px solid black;
-padding:10px;
-min-height:120px;
+  border:2px solid #000;
+  padding:18px 22px;
+  margin-top:12px;
+  display:none;
 }
 
 ul{
-margin:0;
-padding-left:20px;
+  margin:0;
+  padding-left:28px;
+}
+
+li{
+  font-size:27px;
+  line-height:1.45;
+  margin-bottom:10px;
 }
 
 .back{
-display:block;
-text-align:center;
-margin-top:10px;
-text-decoration:none;
+  display:block;
+  text-align:center;
+  margin-top:15px;
+  text-decoration:none;
+  font-size:16px;
+}
+
+@media(max-width:600px){
+  body{
+    padding:8px;
+  }
+
+  td{
+    font-size:18px;
+    padding:9px 10px;
+  }
+
+  li{
+    font-size:18px;
+  }
+
+  .noteBox{
+    padding:12px 14px;
+  }
 }
 </style>
 </head>
 
 <body>
 
-<h3>राकेश मिस्त्री</h3>
+<h3>लाइट मिस्त्री</h3>
 
 <table id="mainTable"></table>
 
-<div class="noteBox">
-<ul id="noteList"></ul>
+<div class="noteBox" id="noteBox">
+  <ul id="noteList"></ul>
 </div>
 
 <a href="light.html" class="back">⬅ वापस जाए</a>
@@ -73,14 +120,14 @@ text-decoration:none;
 <script type="module">
 
 import {
-db,
-collection,
-onSnapshot
+  db,
+  collection,
+  onSnapshot
 } from "./firebase.js";
 
-/* 🔥 SLOT 1 COLLECTION */
 const params = new URLSearchParams(window.location.search);
 const slot = params.get("slot") || "1";
+
 const names = {
   "1": "राकेश मिस्त्री",
   "2": "चन्दन मिस्त्री",
@@ -99,46 +146,63 @@ document.querySelector("h3").innerText = names[slot] || "लाइट मिस�
 
 const colRef = collection(db, "light_slot_" + slot);
 
-onSnapshot(colRef,(snap)=>{
+onSnapshot(colRef, (snap) => {
 
-let mainHTML = "";
-let notes = [];
+  let rows = [];
+  let notes = [];
 
-snap.forEach(doc=>{
-let d = doc.data();
+  snap.forEach(doc => {
+    let d = doc.data();
 
-/* MAIN TABLE */
-if(
-(d.date && d.date !== "-") ||
-(d.work && d.work.trim() !== "") ||
-(d.place && d.place.trim() !== "")
-){
-mainHTML += `
-<tr>
-<td>${d.date || ""}</td>
-<td>${d.work || ""}</td>
-<td>${d.place || ""}</td>
-</tr>
-`;
-}
+    if(
+      (d.date && d.date !== "-") ||
+      (d.work && d.work.trim() !== "") ||
+      (d.place && d.place.trim() !== "")
+    ){
+      rows.push({
+        date: d.date || "",
+        work: d.work || "",
+        place: d.place || "",
+        time: d.time || 0
+      });
+    }
 
-/* NOTES */
-if((d.note || "").trim() !== ""){
-notes.push(d.note);
-}
+    if((d.note || "").trim() !== ""){
+      notes.push({
+        note: d.note,
+        time: d.time || 0
+      });
+    }
+  });
 
-});
+  rows.sort((a,b) => a.time - b.time);
+  notes.sort((a,b) => a.time - b.time);
 
-/* SHOW DATA */
-document.getElementById("mainTable").innerHTML = mainHTML;
+  let mainHTML = "";
+  rows.forEach(d => {
+    mainHTML += `
+      <tr>
+        <td>${d.date}</td>
+        <td>${d.work}</td>
+        <td>${d.place}</td>
+      </tr>
+    `;
+  });
 
-/* NOTES LIST */
-let noteHTML = "";
-notes.forEach(n=>{
-noteHTML += `<li>${n}</li>`;
-});
+  document.getElementById("mainTable").innerHTML = mainHTML;
 
-document.getElementById("noteList").innerHTML = noteHTML;
+  let noteHTML = "";
+  notes.forEach(n => {
+    noteHTML += `<li>${n.note}</li>`;
+  });
+
+  document.getElementById("noteList").innerHTML = noteHTML;
+
+  if(noteHTML.trim() !== ""){
+    document.getElementById("noteBox").style.display = "block";
+  }else{
+    document.getElementById("noteBox").style.display = "none";
+  }
 
 });
 
