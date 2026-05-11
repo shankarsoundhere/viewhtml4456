@@ -3,7 +3,7 @@
   "short_name": "View",
   "start_url": "/viewhtml4456/",
   "display": "standalone",
-  "background_color": "#f1f3f6",
+  "background_color": "#ffffff",
   "theme_color": "#ffffff",
   "orientation": "portrait",
   "icons": [
