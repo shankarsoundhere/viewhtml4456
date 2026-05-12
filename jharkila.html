@@ -10,8 +10,6 @@
 <meta name="theme-color" content="#28a745">
 
 <style>
-
-/* 🔥 BODY FIX (CENTER + NO ZOOM ISSUE) */
 body{
 font-family:Arial;
 background:#dcdde1;
@@ -24,7 +22,6 @@ box-sizing:border-box;
 overflow-x:hidden;
 }
 
-/* 📄 PAGE */
 .page{
 width:210mm;
 max-width:100%;
@@ -35,13 +32,11 @@ box-sizing:border-box;
 box-shadow:0 0 10px rgba(0,0,0,0.25);
 }
 
-/* TITLE */
 h3{
 text-align:center;
 margin-bottom:10px;
 }
 
-/* TABLE */
 table{
 border-collapse:collapse;
 width:100%;
@@ -61,14 +56,12 @@ font-weight:bold;
 background:#eee;
 }
 
-/* DATE FIX */
 #mainTable td:nth-child(1){
 width:85px;
 white-space:nowrap;
 font-size:12px;
 }
 
-/* NOTE */
 .noteBox{
 border:1px solid black;
 padding:8px;
@@ -82,15 +75,12 @@ padding-left:18px;
 text-align:left;
 }
 
-/* BACK BUTTON */
 .back{
 text-align:center;
 margin-top:10px;
 }
 
-/* 📱 MOBILE FIX */
 @media(max-width:800px){
-
 body{
 display:block;
 padding:8px;
@@ -112,12 +102,9 @@ font-size:11px;
 td{
 padding:5px 2px;
 }
-
 }
 
-/* 🖨️ PRINT */
 @media print{
-
 @page{
 size:A4;
 margin:8mm;
@@ -136,12 +123,10 @@ padding:0;
 box-shadow:none;
 }
 
-/* hide back */
 .back{
 display:none;
 }
 
-/* header repeat */
 thead{
 display:table-header-group;
 }
@@ -149,7 +134,6 @@ display:table-header-group;
 tr{
 page-break-inside:avoid;
 }
-
 }
 </style>
 </head>
@@ -161,7 +145,6 @@ page-break-inside:avoid;
 <h3>👷 झारकिला लेबर</h3>
 
 <table id="mainTable">
-
 <tr class="head">
 <td>तारीख</td>
 <td>नाम 1</td>
@@ -171,7 +154,6 @@ page-break-inside:avoid;
 <td>नाम 5</td>
 <td>नाम 6</td>
 </tr>
-
 </table>
 
 <h4>Note</h4>
@@ -187,15 +169,47 @@ page-break-inside:avoid;
 </div>
 
 <script type="module">
-
 import {
 db,
 collection,
 onSnapshot
 } from "./firebase.js";
 
-/* MAIN DATA */
+function sortDate(d){
+let p=(d || "").split("-");
+if(p.length !== 3) return 0;
+
+let dd=p[0].padStart(2,"0");
+let mm=p[1].padStart(2,"0");
+let yy=p[2];
+
+if(yy.length === 2){
+yy="20"+yy;
+}
+
+return Number(yy + mm + dd);
+}
+
+/* MAIN DATA - OLD TO NEW SORT */
 onSnapshot(collection(db,"jharkila"),(snap)=>{
+
+let arr=[];
+
+snap.forEach(d=>{
+let x=d.data();
+
+arr.push({
+date:x.date || "",
+n1:x.n1 || "",
+n2:x.n2 || "",
+n3:x.n3 || "",
+n4:x.n4 || "",
+n5:x.n5 || "",
+n6:x.n6 || ""
+});
+});
+
+arr.sort((a,b)=>sortDate(a.date) - sortDate(b.date));
 
 let html=`
 <tr class="head">
@@ -209,18 +223,16 @@ let html=`
 </tr>
 `;
 
-snap.forEach(d=>{
-let x=d.data();
-
+arr.forEach(x=>{
 html+=`
 <tr>
-<td>${x.date || ""}</td>
-<td>${x.n1 || ""}</td>
-<td>${x.n2 || ""}</td>
-<td>${x.n3 || ""}</td>
-<td>${x.n4 || ""}</td>
-<td>${x.n5 || ""}</td>
-<td>${x.n6 || ""}</td>
+<td>${x.date}</td>
+<td>${x.n1}</td>
+<td>${x.n2}</td>
+<td>${x.n3}</td>
+<td>${x.n4}</td>
+<td>${x.n5}</td>
+<td>${x.n6}</td>
 </tr>
 `;
 });
@@ -236,6 +248,7 @@ let noteHTML="";
 
 snap.forEach(d=>{
 let n=d.data();
+
 if(n.text){
 noteHTML+=`<li>${n.text}</li>`;
 }
@@ -244,7 +257,6 @@ noteHTML+=`<li>${n.text}</li>`;
 document.getElementById("noteList").innerHTML=noteHTML;
 
 });
-
 </script>
 
 <script src="pwa.js"></script>
