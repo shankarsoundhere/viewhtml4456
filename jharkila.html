@@ -10,18 +10,25 @@
 <meta name="theme-color" content="#28a745">
 
 <style>
+
+/* 🔥 BODY FIX (CENTER + NO ZOOM ISSUE) */
 body{
 font-family:Arial;
 background:#dcdde1;
 margin:0;
 padding:15px;
+display:flex;
+justify-content:center;
+align-items:flex-start;
+box-sizing:border-box;
+overflow-x:hidden;
 }
 
 /* 📄 PAGE */
 .page{
 width:210mm;
+max-width:100%;
 min-height:297mm;
-margin:auto;
 background:white;
 padding:12mm;
 box-sizing:border-box;
@@ -81,6 +88,33 @@ text-align:center;
 margin-top:10px;
 }
 
+/* 📱 MOBILE FIX */
+@media(max-width:800px){
+
+body{
+display:block;
+padding:8px;
+}
+
+.page{
+width:100%;
+max-width:100%;
+min-height:auto;
+padding:10px;
+margin:0 auto;
+box-shadow:none;
+}
+
+table{
+font-size:11px;
+}
+
+td{
+padding:5px 2px;
+}
+
+}
+
 /* 🖨️ PRINT */
 @media print{
 
@@ -92,6 +126,7 @@ margin:8mm;
 body{
 background:white;
 padding:0;
+display:block;
 }
 
 .page{
