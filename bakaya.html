@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title></title>
+<title>बकाया लिस्ट</title>
 
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#28a745">
@@ -61,6 +61,7 @@ display:none;
 font-size:13px;
 color:blue;
 margin-top:2px;
+line-height:1.5;
 }
 
 .toggle{
@@ -68,6 +69,13 @@ font-size:12px;
 color:blue;
 cursor:pointer;
 margin-left:5px;
+}
+
+.callBox{
+display:flex;
+gap:5px;
+flex-wrap:wrap;
+justify-content:flex-end;
 }
 
 .btn{
@@ -96,13 +104,57 @@ onSnapshot
 
 const colRef = collection(db,"bakaya");
 
+function dateToNumber(dateStr){
+if(!dateStr) return 99999999;
+let p = dateStr.split("-");
+if(p.length !== 3) return 99999999;
+return Number(p[2] + p[1].padStart(2,"0") + p[0].padStart(2,"0"));
+}
+
+function cleanPhone(phone){
+return String(phone || "").replace(/\s+/g,"").trim();
+}
+
 onSnapshot(colRef,(snap)=>{
+
+let arr=[];
+
+snap.forEach(d=>{
+let x=d.data();
+arr.push(x);
+});
+
+arr.sort((a,b)=>{
+let d1 = dateToNumber(a.date);
+let d2 = dateToNumber(b.date);
+
+if(d1 === d2){
+return (a.time || 0) - (b.time || 0);
+}
+
+return d1 - d2;
+});
 
 let html="";
 let i=0;
 
-snap.forEach(d=>{
-let x=d.data();
+arr.forEach(x=>{
+
+let phone1 = x.phone1 || x.phone || "";
+let phone2 = x.phone2 || "";
+
+let phone1Call = cleanPhone(phone1);
+let phone2Call = cleanPhone(phone2);
+
+let callButtons = "";
+
+if(phone1Call){
+callButtons += `<a href="tel:${phone1Call}" class="btn">📞 Call</a>`;
+}
+
+if(phone2Call){
+callButtons += `<a href="tel:${phone2Call}" class="btn">📞 Call</a>`;
+}
 
 html+=`
 <div class="box">
@@ -120,10 +172,15 @@ html+=`
 <div class="nameBox">
 👤 ${x.name||"-"}
 <span class="toggle" onclick="toggleNumber(${i})">Show</span><br>
-<span class="number" id="num${i}">📞 ${x.phone||"-"}</span>
+<span class="number" id="num${i}">
+📞 ${phone1 || "-"}
+${phone2 ? `<br>📞 ${phone2}` : ""}
+</span>
 </div>
 
-<a href="tel:${x.phone||""}" class="btn">📞 Call</a>
+<div class="callBox">
+${callButtons}
+</div>
 
 </div>
 
@@ -137,7 +194,6 @@ document.getElementById("list").innerHTML=html;
 
 });
 
-/* SHOW / HIDE NUMBER */
 window.toggleNumber = function(i){
 let el = document.getElementById("num"+i);
 el.style.display = (el.style.display==="block") ? "none" : "block";
