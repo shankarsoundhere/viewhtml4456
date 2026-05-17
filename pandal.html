@@ -86,11 +86,12 @@ text-decoration:none;
 
 <script type="module">
 
+import { db } from "./firebase.js";
+
 import {
-db,
 collection,
 onSnapshot
-} from "./firebase.js";
+} from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 
 onSnapshot(collection(db,"pandal"),snap=>{
 
