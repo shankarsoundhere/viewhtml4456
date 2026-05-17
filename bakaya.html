@@ -96,11 +96,13 @@ font-weight:bold;
 
 <script type="module">
 
+// ✅ सही import (fix किया गया)
+import { db } from "./firebase.js";
+
 import {
-db,
 collection,
 onSnapshot
-} from "./firebase.js";
+} from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 
 const colRef = collection(db,"bakaya");
 
