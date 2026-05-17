@@ -169,11 +169,14 @@ page-break-inside:avoid;
 </div>
 
 <script type="module">
+
+// ✅ सही import
+import { db } from "./firebase.js";
+
 import {
-db,
 collection,
 onSnapshot
-} from "./firebase.js";
+} from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 
 function sortDate(d){
 let p=(d || "").split("-");
@@ -257,6 +260,7 @@ noteHTML+=`<li>${n.text}</li>`;
 document.getElementById("noteList").innerHTML=noteHTML;
 
 });
+
 </script>
 
 <script src="pwa.js"></script>
