@@ -95,11 +95,13 @@ li{
 <a href="light.html" class="back">⬅ वापस जाए</a>
 
 <script type="module">
+
+import { db } from "./firebase.js";
+
 import {
-  db,
   collection,
   onSnapshot
-} from "./firebase.js";
+} from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 
 const params = new URLSearchParams(window.location.search);
 const slot = params.get("slot") || "1";
