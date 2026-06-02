@@ -11,72 +11,107 @@
 
 <style>
 body{
-font-family:Arial;
-background:#dcdde1;
-padding:10px;
-margin:0;
+  font-family:Arial;
+  background:#dcdde1;
+  padding:10px;
+  margin:0;
 }
 
 .box{
-background:#f1f2f6;
-padding:12px;
-margin:12px 0;
-border-radius:15px;
-box-shadow:0 4px 8px rgba(0,0,0,0.1);
-}
-
-.detail{
-margin-top:8px;
-font-size:13px;
-word-break:break-word;
+  background:#f1f2f6;
+  padding:14px;
+  margin:12px 0;
+  border-radius:15px;
+  box-shadow:0 4px 8px rgba(0,0,0,0.1);
 }
 
 .bottom{
-display:flex;
-justify-content:space-between;
-align-items:flex-start;
-gap:10px;
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:10px;
 }
 
 .nameBox{
-font-size:14px;
-font-weight:bold;
-line-height:1.2;
+  font-size:15px;
+  font-weight:bold;
+  line-height:1.3;
 }
 
 .number{
-display:none;
-font-size:13px;
-color:blue;
-margin-top:0;
-padding-top:0;
-line-height:1.2;
-font-weight:normal;
+  display:none;
+  font-size:13px;
+  color:blue;
+  line-height:1.3;
+  font-weight:normal;
 }
 
 .toggle{
-font-size:12px;
-color:blue;
-cursor:pointer;
-margin-left:5px;
+  font-size:12px;
+  color:blue;
+  cursor:pointer;
+  margin-left:5px;
 }
 
 .callBox{
-display:flex;
-gap:5px;
-flex-wrap:wrap;
-justify-content:flex-end;
+  display:flex;
+  gap:5px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
 }
 
 .btn{
-padding:7px 12px;
-background:linear-gradient(45deg,#28a745,#34d058);
-color:white;
-border-radius:25px;
-text-decoration:none;
-font-size:12px;
-font-weight:bold;
-display:inline-block;
+  padding:7px 12px;
+  background:linear-gradient(45deg,#28a745,#34d058);
+  color:white;
+  border-radius:25px;
+  text-decoration:none;
+  font-size:12px;
+  font-weight:bold;
+}
+
+.detail{
+  margin-top:10px;
+  font-size:13px;
+}
+
+.metaRow{
+  display:flex;
+  gap:40px;
+  margin:8px 0;
+  font-size:14px;
+  font-weight:bold;
+}
+
+.noteItem{
+  display:flex;
+  align-items:flex-start;
+  margin:8px 0;
+}
+
+.bullet{
+  margin-right:10px;
+  font-size:18px;
+  line-height:1.2;
+}
+
+.noteText{
+  white-space:pre-wrap;
+  font-size:14px;
+  line-height:1.5;
+}
+
+.innerGrid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:8px 18px;
+  width:100%;
+}
+
+.innerGrid span{
+  font-size:14px;
+  line-height:1.5;
+  white-space:nowrap;
 }
 </style>
 </head>
@@ -90,102 +125,148 @@ display:inline-block;
 import { db } from "./firebase.js";
 
 import {
-collection,
-onSnapshot
+  collection,
+  onSnapshot
 } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 
 const colRef = collection(db,"tdm");
 
-function dateToNumber(dateStr){
-if(!dateStr) return 99999999;
-let p = dateStr.split("-");
-if(p.length !== 3) return 99999999;
-return Number(p[2] + p[1].padStart(2,"0") + p[0].padStart(2,"0"));
+function cleanPhone(phone){
+  return String(phone || "").replace(/\s+/g,"").trim();
 }
 
-function cleanPhone(phone){
-return String(phone || "").replace(/\s+/g,"").trim();
+function escapeHTML(text){
+  return String(text || "")
+  .replace(/&/g,"&amp;")
+  .replace(/</g,"&lt;")
+  .replace(/>/g,"&gt;")
+  .replace(/"/g,"&quot;")
+  .replace(/'/g,"&#039;");
+}
+
+function noteToHTML(note){
+  let lines = String(note || "")
+  .split("\n")
+  .map(t=>t.trim())
+  .filter(t=>t);
+
+  if(lines.length <= 1){
+    return `
+    <div class="noteItem">
+      <span class="bullet">•</span>
+      <span class="noteText">${escapeHTML(note || "")}</span>
+    </div>`;
+  }
+
+  return `
+  <div class="noteItem">
+    <span class="bullet">•</span>
+    <div class="innerGrid">
+      ${lines.map(t=>`<span>${escapeHTML(t)}</span>`).join("")}
+    </div>
+  </div>`;
 }
 
 onSnapshot(colRef,(snap)=>{
 
-let arr=[];
+  let arr=[];
 
-snap.forEach(d=>{
-let x=d.data();
-arr.push(x);
-});
+  snap.forEach(d=>{
+    arr.push(d.data());
+  });
 
-arr.sort((a,b)=>{
-let d1 = dateToNumber(a.date);
-let d2 = dateToNumber(b.date);
+  arr.sort((a,b)=>(a.time || 0) - (b.time || 0));
 
-if(d1 === d2){
-return (a.time || 0) - (b.time || 0);
-}
+  let html="";
 
-return d1 - d2;
-});
+  arr.forEach((x,i)=>{
 
-let html="";
+    let phone1 = x.phone1 || x.phone || "";
+    let phone2 = x.phone2 || "";
 
-arr.forEach((x,i)=>{
+    let phone1Call = cleanPhone(phone1);
+    let phone2Call = cleanPhone(phone2);
 
-let phone1 = x.phone1 || x.phone || "";
-let phone2 = x.phone2 || "";
+    let callButtons = "";
 
-let phone1Call = cleanPhone(phone1);
-let phone2Call = cleanPhone(phone2);
+    if(phone1Call){
+      callButtons += `<a href="tel:${phone1Call}" class="btn">📞 Call</a>`;
+    }
 
-let callButtons = "";
+    if(phone2Call){
+      callButtons += `<a href="tel:${phone2Call}" class="btn">📞 Call</a>`;
+    }
 
-if(phone1Call){
-callButtons += `<a href="tel:${phone1Call}" class="btn">📞 Call</a>`;
-}
+    let dues = Array.isArray(x.dues) ? x.dues : [];
 
-if(phone2Call){
-callButtons += `<a href="tel:${phone2Call}" class="btn">📞 Call</a>`;
-}
+    if(!dues.length && Array.isArray(x.notes)){
+      dues = x.notes.map(n=>({date:"",place:"",note:n}));
+    }
 
-html+=`
-<div class="box">
+    let detailHTML = "-";
 
-<div class="bottom">
+    if(dues.length){
+      detailHTML = dues.map(d=>{
+        let meta = "";
 
-<div class="nameBox">
-👤 ${x.name || "-"}
-<span class="toggle" onclick="toggleNumber(${i})">Show</span>
+        if(d.date || d.place){
+          meta = `
+          <div class="noteItem">
+            <span class="bullet">•</span>
+            <div class="metaRow">
+              <span>${escapeHTML(d.date || "")}</span>
+              <span>${escapeHTML(d.place || "")}</span>
+            </div>
+          </div>`;
+        }
 
-<span class="number" id="num${i}">
-📞 ${phone1 || "-"}
-${phone2 ? `<br>📞 ${phone2}` : ""}
-</span>
-</div>
+        return `
+          ${meta}
+          ${noteToHTML(d.note || "")}
+        `;
+      }).join("");
+    }else if(x.amount){
+      detailHTML = noteToHTML(x.amount);
+    }
 
-<div class="callBox">
-${callButtons}
-</div>
+    let showBtn = phone1Call || phone2Call
+    ? `<span class="toggle" onclick="toggleNumber(${i})">Show</span>`
+    : "";
 
-</div>
+    html+=`
+    <div class="box">
 
-<div class="detail">${x.amount || "-"}</div>
+      <div class="bottom">
 
-</div>
-`;
-});
+        <div class="nameBox">
+          👤 ${escapeHTML(x.name || "-")}
+          ${showBtn}
 
-document.getElementById("list").innerHTML=html;
+          <span class="number" id="num${i}">
+            ${phone1 ? "📞 " + escapeHTML(phone1) : ""}
+            ${phone2 ? `<br>📞 ${escapeHTML(phone2)}` : ""}
+          </span>
+        </div>
+
+        <div class="callBox">
+          ${callButtons}
+        </div>
+
+      </div>
+
+      <div class="detail">${detailHTML}</div>
+
+    </div>
+    `;
+  });
+
+  document.getElementById("list").innerHTML=html;
 
 });
 
 window.toggleNumber = function(i){
-let el = document.getElementById("num"+i);
-
-if(el.style.display==="block"){
-el.style.display="none";
-}else{
-el.style.display="block";
-}
+  let el = document.getElementById("num"+i);
+  el.style.display = el.style.display === "block" ? "none" : "block";
 }
 
 </script>
