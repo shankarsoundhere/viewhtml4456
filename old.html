@@ -6,9 +6,6 @@
 
 <title>बकाया लिस्ट</title>
 
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#28a745">
-
 <style>
 *{ box-sizing:border-box; }
 
@@ -26,7 +23,7 @@ body{
   margin:0;
 }
 
-/* ===== TOP NAME LIST ===== */
+/* TOP LIST */
 .topList{
   background:white;
   padding:10px;
@@ -47,7 +44,7 @@ body{
   font-size:12px;
 }
 
-/* ===== CARD ===== */
+/* CARD */
 .box{
   background:#f1f2f6;
   padding:14px;
@@ -55,6 +52,7 @@ body{
   border-radius:15px;
   box-shadow:0 4px 8px rgba(0,0,0,0.1);
   width:100%;
+  overflow:hidden;
 }
 
 .bottom{
@@ -66,8 +64,10 @@ body{
 
 .nameBox{
   flex:1;
+  min-width:0;
   font-size:15px;
   font-weight:bold;
+  word-break:break-word;
 }
 
 .number{
@@ -87,6 +87,8 @@ body{
 .callBox{
   display:flex;
   gap:5px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
 }
 
 .btn{
@@ -102,7 +104,10 @@ body{
 .detail{
   margin-top:10px;
   font-size:13px;
+  width:100%;
 }
+
+/* ===== ORIGINAL COLUMN STRUCTURE वापस ===== */
 
 .metaRow{
   display:flex;
@@ -113,33 +118,51 @@ body{
   font-weight:bold;
 }
 
+.metaRow span{
+  word-break:break-word;
+}
+
 .noteItem{
   display:flex;
+  align-items:flex-start;
   margin:8px 0;
 }
 
 .bullet{
   margin-right:8px;
+  font-size:18px;
 }
 
 .noteText{
   white-space:pre-wrap;
+  font-size:14px;
+  line-height:1.5;
+  word-break:break-word;
 }
 
 .innerGrid{
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(80px,1fr));
-  gap:8px;
+  gap:8px 10px;
+}
+
+.innerGrid span{
+  font-size:14px;
+  word-break:break-word;
+}
+
+/* MOBILE FIX */
+@media(max-width:480px){
+  .innerGrid{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
 }
 </style>
 </head>
 
 <body>
 
-<!-- 🔥 TOP NAME LIST -->
 <div id="topList" class="topList"></div>
-
-<!-- MAIN LIST -->
 <div id="list"></div>
 
 <script type="module">
@@ -205,7 +228,6 @@ onSnapshot(colRef,(snap)=>{
 
     let id = "card"+i;
 
-    /* ===== TOP NAME LINK ===== */
     topHTML += `<a href="#${id}">${escapeHTML(x.name || "-")}</a>`;
 
     let phone1 = x.phone1 || x.phone || "";
@@ -217,11 +239,11 @@ onSnapshot(colRef,(snap)=>{
     let callButtons = "";
 
     if(phone1Call){
-      callButtons += `<a href="tel:${phone1Call}" class="btn">📞</a>`;
+      callButtons += `<a href="tel:${phone1Call}" class="btn">📞 Call</a>`;
     }
 
     if(phone2Call){
-      callButtons += `<a href="tel:${phone2Call}" class="btn">📞</a>`;
+      callButtons += `<a href="tel:${phone2Call}" class="btn">📞 Call</a>`;
     }
 
     let dues = Array.isArray(x.dues) ? x.dues : [];
@@ -295,8 +317,6 @@ window.toggleNumber = function(i){
   el.style.display = el.style.display === "block" ? "none" : "block";
 }
 </script>
-
-<script src="pwa.js"></script>
 
 </body>
 </html>
