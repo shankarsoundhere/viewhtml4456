@@ -5,137 +5,91 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>पंडाल मिस्त्री</title>
 
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#28a745">
-<link rel="icon" href="icon-192.png">
-<link rel="apple-touch-icon" href="icon-192.png">
-
 <style>
-body{
-font-family:Arial;
-margin:10px;
-background:#fff;
+body {
+    margin:0;
+    font-family: Arial, sans-serif;
+    background:#f8f9fa;
 }
 
-h3{
-text-align:center;
+/* Header */
+.header {
+    background:#0d6efd;
+    color:white;
+    text-align:center;
+    padding:16px;
+    font-size:18px;
+    position:sticky;
+    top:0;
+    z-index:1000;
 }
 
-table{
-width:100%;
-border-collapse:collapse;
-margin-bottom:15px;
+/* Container */
+.container {
+    padding:12px;
 }
 
-td{
-border:1px solid #000;
-padding:10px;
-vertical-align:top;
-line-height:1.8;
-font-size:16px;
-text-align:left;
+/* Card */
+.card {
+    display:block;
+    text-decoration:none;
+    color:#212529;
+    background:white;
+    margin-bottom:12px;
+    padding:16px;
+    border-radius:12px;
+    box-shadow:0 3px 8px rgba(0,0,0,0.08);
+    font-size:16px;
+    font-weight:500;
+    transition:0.2s;
 }
 
-.title{
-font-size:20px;
-font-weight:bold;
-margin:12px 0 5px;
+/* Tap effect */
+.card:active {
+    transform:scale(0.98);
+    background:#f1f3f6;
 }
 
-ul{
-margin:0;
-padding-left:20px;
+/* Back button */
+.back {
+    display:block;
+    text-align:center;
+    margin:15px;
+    font-size:16px;
+    text-decoration:none;
+    color:#0d6efd;
 }
 
-.back{
-display:block;
-text-align:center;
-margin-top:15px;
-text-decoration:none;
+/* Mobile spacing */
+@media (max-width:600px){
+    .card{
+        font-size:17px;
+        padding:18px;
+    }
 }
 </style>
 </head>
 
 <body>
 
-<h3>🎪 पंडाल मिस्त्री</h3>
+<div class="header"<pnadal</div>
 
-<div id="table1Section" style="display:none;">
-<div class="title">हाजरी</div>
-<table>
-<tr>
-<td>
-<ul id="table1Data"></ul>
-</td>
-</tr>
-</table>
+<div class="container">
+
+<a class="card" href="light-view.html?slot=1">राकेश मिस्त्री</a>
+<a class="card" href="pandal-view.html?slot=2">नुनु</a>
+<a class="card" href="pandal-view.html?slot=3">लक्की</a>
+<a class="card" href="pandal-view.html?slot=4">गुल्ला</a>
+<a class="card" href="pandal-view.html?slot=5">बब्लू ड्राइवर</a>
+<a class="card" href="pandal-view.html?slot=6">गोपी मिस्त्री</a>
+<a class="card" href="pandal-view.html?slot=7">सूरज जी</a>
+<a class="card" href="pandal-view.html?slot=8">Slot 8</a>
+<a class="card" href="pandal-view.html?slot=9">Slot 9</a>
+<a class="card" href="pandal-view.html?slot=10">Slot 10</a>
+
 </div>
 
-<div id="table2Section" style="display:none;">
-<div class="title">📝 Notes</div>
-<table>
-<tr>
-<td>
-<ul id="table2Data"></ul>
-</td>
-</tr>
-</table>
-</div>
-
-<a href="index.html" class="back">⬅ वापस जाए</a>
-
-<script type="module">
-
-import { db } from "./firebase.js";
-
-import {
-collection,
-onSnapshot
-} from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
-
-onSnapshot(collection(db,"pandal"),snap=>{
-
-let t1="";
-let t2="";
-let has1=false;
-let has2=false;
-
-snap.forEach(d=>{
-let x=d.data();
-
-if(x.note1 && x.note1.trim() !== ""){
-has1=true;
-
-x.note1.split("\n").forEach(line=>{
-if(line.trim() !== ""){
-t1 += `<li>${line.trim()}</li>`;
-}
-});
-}
-
-if(x.note2 && x.note2.trim() !== ""){
-has2=true;
-
-x.note2.split("\n").forEach(line=>{
-if(line.trim() !== ""){
-t2 += `<li>${line.trim()}</li>`;
-}
-});
-}
-
-});
-
-document.getElementById("table1Data").innerHTML=t1;
-document.getElementById("table2Data").innerHTML=t2;
-
-document.getElementById("table1Section").style.display=has1 ? "block" : "none";
-document.getElementById("table2Section").style.display=has2 ? "block" : "none";
-
-});
-
-</script>
-
-<script src="pwa.js"></script>
+<a class="back" href="index.html">⬅ वापस जाए</a>
 
 </body>
 </html>
