@@ -90,37 +90,27 @@ li{
 
 </head>
 
-
 <body>
-
 
 <h3>लाइट मिस्त्री</h3>
 
-
 <table id="mainTable"></table>
 
-
 <div class="noteBox" id="noteBox">
-
 <ul id="noteList"></ul>
-
 </div>
-
 
 <a href="light.html" class="back">
 ⬅ वापस जाए
 </a>
 
-
 <script type="module">
 
-
-import { db } from "./firebase.js";
-
 import {
+  db,
   collection,
   onSnapshot
-} from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+} from "./firebase.js";
 
 
 /* =========================
@@ -129,7 +119,7 @@ import {
 
 const params =
 new URLSearchParams(
-window.location.search
+  window.location.search
 );
 
 const slot =
@@ -167,8 +157,8 @@ onSnapshot(
   (snapshot)=>{
 
     let currentName =
-    defaultNames[slot] ||
-    "लाइट मिस्त्री";
+      defaultNames[slot] ||
+      "लाइट मिस्त्री";
 
 
     snapshot.forEach(item=>{
@@ -176,7 +166,7 @@ onSnapshot(
       if(item.id === String(slot)){
 
         const data =
-        item.data();
+          item.data();
 
 
         if(
@@ -185,7 +175,7 @@ onSnapshot(
         ){
 
           currentName =
-          data.name.trim();
+            data.name.trim();
 
         }
 
@@ -195,12 +185,12 @@ onSnapshot(
 
 
     document.title =
-    currentName;
+      currentName;
 
 
     document.querySelector("h3")
-    .innerText =
-    currentName;
+      .innerText =
+      currentName;
 
   },
 
@@ -221,10 +211,10 @@ onSnapshot(
 ========================= */
 
 const colRef =
-collection(
-  db,
-  "light_slot_" + slot
-);
+  collection(
+    db,
+    "light_slot_" + slot
+  );
 
 
 /* =========================
@@ -238,14 +228,13 @@ onSnapshot(
   (snap)=>{
 
     let rows = [];
-
     let notes = [];
 
 
     snap.forEach(doc=>{
 
-      let d =
-      doc.data();
+      const d =
+        doc.data();
 
 
       /* MAIN DATA */
@@ -253,13 +242,13 @@ onSnapshot(
       if(
 
         (d.date &&
-        d.date !== "-") ||
+         d.date !== "-") ||
 
         (d.work &&
-        d.work.trim() !== "") ||
+         d.work.trim() !== "") ||
 
         (d.place &&
-        d.place.trim() !== "")
+         d.place.trim() !== "")
 
       ){
 
@@ -320,17 +309,11 @@ onSnapshot(
     rows.forEach(d=>{
 
       mainHTML += `
-
         <tr>
-
           <td>${d.date}</td>
-
           <td>${d.work}</td>
-
           <td>${d.place}</td>
-
         </tr>
-
       `;
 
     });
@@ -339,7 +322,7 @@ onSnapshot(
     document.getElementById(
       "mainTable"
     ).innerHTML =
-    mainHTML;
+      mainHTML;
 
 
     /* =========================
@@ -352,7 +335,7 @@ onSnapshot(
     notes.forEach(n=>{
 
       noteHTML +=
-      `<li>${n.note}</li>`;
+        `<li>${n.note}</li>`;
 
     });
 
@@ -360,24 +343,15 @@ onSnapshot(
     document.getElementById(
       "noteList"
     ).innerHTML =
-    noteHTML;
+      noteHTML;
 
 
-    if(noteHTML.trim() !== ""){
-
-      document.getElementById(
-        "noteBox"
-      ).style.display =
-      "block";
-
-    }else{
-
-      document.getElementById(
-        "noteBox"
-      ).style.display =
-      "none";
-
-    }
+    document.getElementById(
+      "noteBox"
+    ).style.display =
+      noteHTML.trim() !== ""
+        ? "block"
+        : "none";
 
   },
 
@@ -394,9 +368,7 @@ onSnapshot(
 
 </script>
 
-
 <script src="pwa.js"></script>
-
 
 </body>
 
