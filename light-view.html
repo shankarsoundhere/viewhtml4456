@@ -1,17 +1,23 @@
 <!DOCTYPE html>
 <html lang="hi">
+
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
 
 <title>लाइट मिस्त्री</title>
 
 <link rel="manifest" href="manifest.json">
+
 <meta name="theme-color" content="#ffffff">
 
 <style>
+
 body{
-  font-family: Arial, sans-serif;
+  font-family:Arial,sans-serif;
   margin:10px;
   background:#fff;
   color:#000;
@@ -79,22 +85,35 @@ li{
   text-decoration:none;
   font-size:14px;
 }
+
 </style>
+
 </head>
+
 
 <body>
 
+
 <h3>लाइट मिस्त्री</h3>
+
 
 <table id="mainTable"></table>
 
+
 <div class="noteBox" id="noteBox">
-  <ul id="noteList"></ul>
+
+<ul id="noteList"></ul>
+
 </div>
 
-<a href="light.html" class="back">⬅ वापस जाए</a>
+
+<a href="light.html" class="back">
+⬅ वापस जाए
+</a>
+
 
 <script type="module">
+
 
 import { db } from "./firebase.js";
 
@@ -103,89 +122,282 @@ import {
   onSnapshot
 } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 
-const params = new URLSearchParams(window.location.search);
-const slot = params.get("slot") || "1";
 
-const names = {
-  "1": "राकेश मिस्त्री",
-  "2": "नुनु",
-  "3": "लक्की",
-  "4": "गुल्ला",
-  "5": "बब्लू ड्राइवर",
-  "6": "गोपी मिस्त्री",
-  "7": "सूरज जी",
-  "8": "बैला",
-  "9": "Slot 9",
-  "10": "Slot 10"
+/* =========================
+   GET SLOT
+========================= */
+
+const params =
+new URLSearchParams(
+window.location.search
+);
+
+const slot =
+params.get("slot") || "1";
+
+
+/* =========================
+   DEFAULT NAMES
+========================= */
+
+const defaultNames = {
+
+  "1":"राकेश मिस्त्री",
+  "2":"नुनु",
+  "3":"लक्की",
+  "4":"गुल्ला",
+  "5":"बब्लू ड्राइवर",
+  "6":"गोपी मिस्त्री",
+  "7":"सूरज जी",
+  "8":"बैला",
+  "9":"Slot 9",
+  "10":"Slot 10"
+
 };
 
-document.title = names[slot] || "लाइट मिस्त्री";
-document.querySelector("h3").innerText = names[slot] || "लाइट मिस्त्री";
 
-const colRef = collection(db, "light_slot_" + slot);
+/* =========================
+   FIREBASE NAME
+========================= */
 
-onSnapshot(colRef, (snap) => {
+onSnapshot(
 
-  let rows = [];
-  let notes = [];
+  collection(db,"light_names"),
 
-  snap.forEach(doc => {
-    let d = doc.data();
+  (snapshot)=>{
 
-    if(
-      (d.date && d.date !== "-") ||
-      (d.work && d.work.trim() !== "") ||
-      (d.place && d.place.trim() !== "")
-    ){
-      rows.push({
-        date: d.date || "",
-        work: d.work || "",
-        place: d.place || "",
-        time: d.time || 0
-      });
-    }
+    let currentName =
+    defaultNames[slot] ||
+    "लाइट मिस्त्री";
 
-    if((d.note || "").trim() !== ""){
-      notes.push({
-        note: d.note,
-        time: d.time || 0
-      });
-    }
-  });
 
-  rows.sort((a,b) => a.time - b.time);
-  notes.sort((a,b) => a.time - b.time);
+    snapshot.forEach(item=>{
 
-  let mainHTML = "";
-  rows.forEach(d => {
-    mainHTML += `
-      <tr>
-        <td>${d.date}</td>
-        <td>${d.work}</td>
-        <td>${d.place}</td>
-      </tr>
-    `;
-  });
+      if(item.id === String(slot)){
 
-  document.getElementById("mainTable").innerHTML = mainHTML;
+        const data =
+        item.data();
 
-  let noteHTML = "";
-  notes.forEach(n => {
-    noteHTML += `<li>${n.note}</li>`;
-  });
 
-  document.getElementById("noteList").innerHTML = noteHTML;
+        if(
+          data.name &&
+          data.name.trim() !== ""
+        ){
 
-  if(noteHTML.trim() !== ""){
-    document.getElementById("noteBox").style.display = "block";
-  }else{
-    document.getElementById("noteBox").style.display = "none";
+          currentName =
+          data.name.trim();
+
+        }
+
+      }
+
+    });
+
+
+    document.title =
+    currentName;
+
+
+    document.querySelector("h3")
+    .innerText =
+    currentName;
+
+  },
+
+  (error)=>{
+
+    console.error(
+      "Firebase Name Error:",
+      error
+    );
+
   }
 
-});
+);
+
+
+/* =========================
+   SLOT DATA
+========================= */
+
+const colRef =
+collection(
+  db,
+  "light_slot_" + slot
+);
+
+
+/* =========================
+   DATA LOAD
+========================= */
+
+onSnapshot(
+
+  colRef,
+
+  (snap)=>{
+
+    let rows = [];
+
+    let notes = [];
+
+
+    snap.forEach(doc=>{
+
+      let d =
+      doc.data();
+
+
+      /* MAIN DATA */
+
+      if(
+
+        (d.date &&
+        d.date !== "-") ||
+
+        (d.work &&
+        d.work.trim() !== "") ||
+
+        (d.place &&
+        d.place.trim() !== "")
+
+      ){
+
+        rows.push({
+
+          date:d.date || "",
+
+          work:d.work || "",
+
+          place:d.place || "",
+
+          time:d.time || 0
+
+        });
+
+      }
+
+
+      /* NOTES */
+
+      if(
+        (d.note || "").trim() !== ""
+      ){
+
+        notes.push({
+
+          note:d.note,
+
+          time:d.time || 0
+
+        });
+
+      }
+
+    });
+
+
+    /* =========================
+       SORT
+    ========================= */
+
+    rows.sort(
+      (a,b)=>a.time-b.time
+    );
+
+    notes.sort(
+      (a,b)=>a.time-b.time
+    );
+
+
+    /* =========================
+       MAIN TABLE
+    ========================= */
+
+    let mainHTML = "";
+
+
+    rows.forEach(d=>{
+
+      mainHTML += `
+
+        <tr>
+
+          <td>${d.date}</td>
+
+          <td>${d.work}</td>
+
+          <td>${d.place}</td>
+
+        </tr>
+
+      `;
+
+    });
+
+
+    document.getElementById(
+      "mainTable"
+    ).innerHTML =
+    mainHTML;
+
+
+    /* =========================
+       NOTES
+    ========================= */
+
+    let noteHTML = "";
+
+
+    notes.forEach(n=>{
+
+      noteHTML +=
+      `<li>${n.note}</li>`;
+
+    });
+
+
+    document.getElementById(
+      "noteList"
+    ).innerHTML =
+    noteHTML;
+
+
+    if(noteHTML.trim() !== ""){
+
+      document.getElementById(
+        "noteBox"
+      ).style.display =
+      "block";
+
+    }else{
+
+      document.getElementById(
+        "noteBox"
+      ).style.display =
+      "none";
+
+    }
+
+  },
+
+  (error)=>{
+
+    console.error(
+      "Firebase Data Error:",
+      error
+    );
+
+  }
+
+);
+
 </script>
+
 
 <script src="pwa.js"></script>
 
+
 </body>
+
 </html>
