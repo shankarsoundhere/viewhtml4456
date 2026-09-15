@@ -84,7 +84,7 @@ li{
 
 <body>
 
-<h3>पंडाल मिस्त्री</h3>
+<h3 id="pageTitle">पंडाल मिस्त्री</h3>
 
 <table id="mainTable"></table>
 
@@ -93,6 +93,7 @@ li{
 </div>
 
 <a href="pandal.html" class="back">⬅ वापस जाए</a>
+
 
 <script type="module">
 
@@ -103,87 +104,248 @@ import {
   onSnapshot
 } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 
-const params = new URLSearchParams(window.location.search);
-const slot = params.get("slot") || "1";
 
-const names = {
-  "1": "राकेश मिस्त्री",
-  "2": "नुनु",
-  "3": "लक्की",
-  "4": "गुल्ला",
-  "5": "बब्लू ड्राइवर",
-  "6": "गोपी मिस्त्री",
-  "7": "सूरज जी",
-  "8": "बैला",
-  "9": "Slot 9",
-  "10": "Slot 10"
-};
+/* Slot प्राप्त करें */
 
-document.title = names[slot] || "पंडाल मिस्त्री";
-document.querySelector("h3").innerText = names[slot] || "पंडाल मिस्त्री";
+const params =
+  new URLSearchParams(window.location.search);
 
-const colRef = collection(db, "pandal_slot_" + slot);
+const slot =
+  params.get("slot") || "1";
 
-onSnapshot(colRef, (snap) => {
 
-  let rows = [];
-  let notes = [];
+/* =========================
+   FIREBASE से नाम लोड करें
+========================= */
 
-  snap.forEach(doc => {
-    let d = doc.data();
+const nameRef =
+  collection(db, "pandal_names");
 
-    if(
-      (d.date && d.date !== "-") ||
-      (d.work && d.work.trim() !== "") ||
-      (d.place && d.place.trim() !== "")
-    ){
-      rows.push({
-        date: d.date || "",
-        work: d.work || "",
-        place: d.place || "",
-        time: d.time || 0
-      });
+onSnapshot(
+  nameRef,
+
+  (snapshot) => {
+
+    let currentName = "";
+
+    snapshot.forEach(item => {
+
+      if(item.id === String(slot)){
+
+        const data =
+          item.data();
+
+        if(
+          data.name &&
+          data.name.trim() !== ""
+        ){
+
+          currentName =
+            data.name.trim();
+
+        }
+
+      }
+
+    });
+
+
+    if(currentName !== ""){
+
+      document.title =
+        currentName;
+
+      document.getElementById("pageTitle")
+        .innerText =
+        currentName;
+
+    }else{
+
+      document.title =
+        "पंडाल मिस्त्री";
+
+      document.getElementById("pageTitle")
+        .innerText =
+        "पंडाल मिस्त्री";
+
     }
 
-    if((d.note || "").trim() !== ""){
-      notes.push({
-        note: d.note,
-        time: d.time || 0
-      });
+  },
+
+  (error) => {
+
+    console.error(
+      "Firebase Name Error:",
+      error
+    );
+
+  }
+);
+
+
+/* =========================
+   SLOT DATA
+========================= */
+
+const colRef =
+  collection(
+    db,
+    "pandal_slot_" + slot
+  );
+
+
+onSnapshot(
+  colRef,
+
+  (snap) => {
+
+    let rows = [];
+    let notes = [];
+
+
+    snap.forEach(doc => {
+
+      let d =
+        doc.data();
+
+
+      if(
+        (d.date && d.date !== "-") ||
+        (d.work && d.work.trim() !== "") ||
+        (d.place && d.place.trim() !== "")
+      ){
+
+        rows.push({
+
+          date:
+            d.date || "",
+
+          work:
+            d.work || "",
+
+          place:
+            d.place || "",
+
+          time:
+            d.time || 0
+
+        });
+
+      }
+
+
+      if(
+        (d.note || "").trim() !== ""
+      ){
+
+        notes.push({
+
+          note:
+            d.note,
+
+          time:
+            d.time || 0
+
+        });
+
+      }
+
+    });
+
+
+    rows.sort(
+      (a,b) => a.time - b.time
+    );
+
+    notes.sort(
+      (a,b) => a.time - b.time
+    );
+
+
+    /* =========================
+       TABLE
+    ========================= */
+
+    let mainHTML = "";
+
+
+    rows.forEach(d => {
+
+      mainHTML += `
+
+        <tr>
+
+          <td>${d.date}</td>
+
+          <td>${d.work}</td>
+
+          <td>${d.place}</td>
+
+        </tr>
+
+      `;
+
+    });
+
+
+    document.getElementById(
+      "mainTable"
+    ).innerHTML =
+      mainHTML;
+
+
+    /* =========================
+       NOTES
+    ========================= */
+
+    let noteHTML = "";
+
+
+    notes.forEach(n => {
+
+      noteHTML +=
+        `<li>${n.note}</li>`;
+
+    });
+
+
+    document.getElementById(
+      "noteList"
+    ).innerHTML =
+      noteHTML;
+
+
+    if(noteHTML.trim() !== ""){
+
+      document.getElementById(
+        "noteBox"
+      ).style.display =
+        "block";
+
+    }else{
+
+      document.getElementById(
+        "noteBox"
+      ).style.display =
+        "none";
+
     }
-  });
 
-  rows.sort((a,b) => a.time - b.time);
-  notes.sort((a,b) => a.time - b.time);
+  },
 
-  let mainHTML = "";
-  rows.forEach(d => {
-    mainHTML += `
-      <tr>
-        <td>${d.date}</td>
-        <td>${d.work}</td>
-        <td>${d.place}</td>
-      </tr>
-    `;
-  });
+  (error) => {
 
-  document.getElementById("mainTable").innerHTML = mainHTML;
+    console.error(
+      "Firebase Slot Data Error:",
+      error
+    );
 
-  let noteHTML = "";
-  notes.forEach(n => {
-    noteHTML += `<li>${n.note}</li>`;
-  });
-
-  document.getElementById("noteList").innerHTML = noteHTML;
-
-  if(noteHTML.trim() !== ""){
-    document.getElementById("noteBox").style.display = "block";
-  }else{
-    document.getElementById("noteBox").style.display = "none";
   }
 
-});
+);
+
 </script>
+
 
 <script src="pwa.js"></script>
 
