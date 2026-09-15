@@ -1,28 +1,24 @@
-const CACHE_NAME = "tent-house-v3";
+const CACHE_NAME = "pandal-mistri-v3";
 
-const OFFLINE_HTML = `
+const OFFLINE_PAGE = `
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <meta name="theme-color" content="#28a745">
-
 <title>Offline</title>
 
 <style>
 html,body{
     margin:0;
-    padding:0;
     width:100%;
     height:100%;
-    background:#ffffff;
+    background:white;
     font-family:Arial,sans-serif;
 }
 
-.offline{
-    width:100%;
+.box{
     height:100%;
     display:flex;
     flex-direction:column;
@@ -40,126 +36,85 @@ html,body{
     margin-bottom:45px;
 }
 
-.message{
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:25px;
+.text{
     font-size:34px;
     color:#222;
 }
 
-.cloud{
+.icon{
     font-size:42px;
+    margin-right:20px;
 }
 </style>
 </head>
 
 <body>
+<div class="box">
 
-<div class="offline">
+<img class="logo" src="/viewhtml4456/icon-192.png">
 
-    <img
-        class="logo"
-        src="icon-192.png"
-        alt="Admin"
-    >
-
-    <div class="message">
-        <span class="cloud">☁̸</span>
-        <span>You're offline</span>
-    </div>
-
+<div class="text">
+<span class="icon">☁̸</span>
+You're offline
 </div>
 
+</div>
 </body>
 </html>
 `;
 
-
-/* INSTALL */
 self.addEventListener("install", event => {
-
     event.waitUntil(
-
         caches.open(CACHE_NAME).then(cache => {
-
             return cache.addAll([
-                "./icon-192.png"
+                "/viewhtml4456/",
+                "/viewhtml4456/icon-192.png",
+                "/viewhtml4456/icon-512.png",
+                "/viewhtml4456/manifest.json"
             ]);
-
         })
-
     );
 
     self.skipWaiting();
 });
 
-
-/* ACTIVATE */
 self.addEventListener("activate", event => {
-
     event.waitUntil(
-
-        caches.keys().then(names => {
-
+        caches.keys().then(keys => {
             return Promise.all(
-
-                names
-                    .filter(name => name !== CACHE_NAME)
-                    .map(name => caches.delete(name))
-
+                keys
+                .filter(key => key !== CACHE_NAME)
+                .map(key => caches.delete(key))
             );
-
-        }).then(() => {
-
-            return self.clients.claim();
-
-        })
-
+        }).then(() => self.clients.claim())
     );
-
 });
 
-
-/* FETCH */
 self.addEventListener("fetch", event => {
 
-    /* सिर्फ webpage/navigation के लिए offline screen */
     if (event.request.mode === "navigate") {
 
         event.respondWith(
-
             fetch(event.request)
-                .catch(() => {
-
-                    return new Response(
-                        OFFLINE_HTML,
-                        {
-                            headers: {
-                                "Content-Type": "text/html; charset=UTF-8"
-                            }
-                        }
-                    );
-
-                })
-
+            .catch(() => {
+                return new Response(OFFLINE_PAGE, {
+                    headers: {
+                        "Content-Type": "text/html; charset=UTF-8"
+                    }
+                });
+            })
         );
 
         return;
     }
 
-
-    /* बाकी files */
     event.respondWith(
-
-        fetch(event.request)
-            .catch(() => {
-
-                return caches.match(event.request);
-
-            })
-
+        caches.match(event.request)
+        .then(response => {
+            return response || fetch(event.request);
+        })
+        .catch(() => {
+            return new Response("");
+        })
     );
-
 });
