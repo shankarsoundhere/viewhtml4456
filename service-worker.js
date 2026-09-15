@@ -54,7 +54,7 @@ html,body{
 <img class="logo" src="/viewhtml4456/icon-192.png">
 
 <div class="text">
-<span class="icon">☁̸</span>
+<span class="icon">☁️❌</span>
 You're offline
 </div>
 
