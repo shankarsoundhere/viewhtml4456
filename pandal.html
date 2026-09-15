@@ -1,19 +1,24 @@
 <!DOCTYPE html>
 <html lang="hi">
+
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
 <title>पंडाल मिस्त्री</title>
 
 <style>
-body {
+
+body{
     margin:0;
-    font-family: Arial, sans-serif;
+    font-family:Arial,sans-serif;
     background:#f8f9fa;
 }
 
-/* Header */
-.header {
+.header{
     background:#0d6efd;
     color:white;
     text-align:center;
@@ -24,14 +29,12 @@ body {
     z-index:1000;
 }
 
-/* Container */
-.container {
+.container{
     padding:12px;
 }
 
-/* Card */
-.card {
-    display:block;
+.card{
+    display:none;
     text-decoration:none;
     color:#212529;
     background:white;
@@ -44,14 +47,12 @@ body {
     transition:0.2s;
 }
 
-/* Tap effect */
-.card:active {
+.card:active{
     transform:scale(0.98);
     background:#f1f3f6;
 }
 
-/* Back button */
-.back {
+.back{
     display:block;
     text-align:center;
     margin:15px;
@@ -60,36 +61,176 @@ body {
     color:#0d6efd;
 }
 
-/* Mobile spacing */
-@media (max-width:600px){
+@media(max-width:600px){
+
     .card{
         font-size:17px;
         padding:18px;
     }
+
 }
+
 </style>
+
 </head>
 
 <body>
 
-<div class="header">पंडाल मिस्त्री</div>
+<div class="header">
+पंडाल मिस्त्री
+</div>
 
-<div class="container">
+<div class="container" id="pandalList">
 
-<a class="card" href="pandal-view.html?slot=1">राकेश मिस्त्री</a>
-<a class="card" href="pandal-view.html?slot=2">नुनु</a>
-<a class="card" href="pandal-view.html?slot=3">लक्की</a>
-<a class="card" href="pandal-view.html?slot=4">गुल्ला</a>
-<a class="card" href="pandal-view.html?slot=5">बब्लू ड्राइवर</a>
-<a class="card" href="pandal-view.html?slot=6">गोपी मिस्त्री</a>
-<a class="card" href="pandal-view.html?slot=7">सूरज जी</a>
-<a class="card" href="pandal-view.html?slot=8">बैला</a>
-<a class="card" href="pandal-view.html?slot=9">Slot 9</a>
-<a class="card" href="pandal-view.html?slot=10">Slot 10</a>
+<a class="card"
+href="pandal-view.html?slot=1"
+data-slot="1"></a>
+
+<a class="card"
+href="pandal-view.html?slot=2"
+data-slot="2"></a>
+
+<a class="card"
+href="pandal-view.html?slot=3"
+data-slot="3"></a>
+
+<a class="card"
+href="pandal-view.html?slot=4"
+data-slot="4"></a>
+
+<a class="card"
+href="pandal-view.html?slot=5"
+data-slot="5"></a>
+
+<a class="card"
+href="pandal-view.html?slot=6"
+data-slot="6"></a>
+
+<a class="card"
+href="pandal-view.html?slot=7"
+data-slot="7"></a>
+
+<a class="card"
+href="pandal-view.html?slot=8"
+data-slot="8"></a>
+
+<a class="card"
+href="pandal-view.html?slot=9"
+data-slot="9"></a>
+
+<a class="card"
+href="pandal-view.html?slot=10"
+data-slot="10"></a>
 
 </div>
 
-<a class="back" href="index.html">⬅ वापस जाए</a>
+<a class="back" href="index.html">
+⬅ वापस जाए
+</a>
+
+
+<script type="module">
+
+import {
+    db,
+    collection,
+    onSnapshot
+} from "./firebase.js";
+
+
+const cards =
+document.querySelectorAll(".card");
+
+
+/* =========================
+   FIREBASE PANDAL NAMES
+========================= */
+
+onSnapshot(
+
+    collection(db,"pandal_names"),
+
+    (snapshot)=>{
+
+        const names = {};
+
+
+        snapshot.forEach(item=>{
+
+            const slot =
+                Number(item.id);
+
+
+            if(slot < 1 || slot > 10)
+                return;
+
+
+            const data =
+                item.data();
+
+
+            if(
+                data.name &&
+                data.name.trim() !== ""
+            ){
+
+                names[slot] =
+                    data.name.trim();
+
+            }
+
+        });
+
+
+        /* =========================
+           SHOW FIREBASE NAMES
+        ========================= */
+
+        cards.forEach(card=>{
+
+            const slot =
+                Number(card.dataset.slot);
+
+
+            if(names[slot]){
+
+                card.textContent =
+                    names[slot];
+
+
+                card.href =
+                    "pandal-view.html?slot=" +
+                    slot;
+
+
+                card.style.display =
+                    "block";
+
+            }else{
+
+                card.style.display =
+                    "none";
+
+            }
+
+        });
+
+    },
+
+
+    (error)=>{
+
+        console.error(
+            "Firebase Pandal Name Error:",
+            error
+        );
+
+    }
+
+);
+
+</script>
 
 </body>
+
 </html>
