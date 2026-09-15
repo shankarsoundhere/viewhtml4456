@@ -11,7 +11,7 @@
 
 <style>
 body{
-  font-family: Arial, sans-serif;
+  font-family:Arial,sans-serif;
   margin:10px;
   background:#fff;
   color:#000;
@@ -30,6 +30,18 @@ table{
   margin-bottom:15px;
 }
 
+/* TABLE HEADER */
+th{
+  border:1px solid #000;
+  padding:6px 10px;
+  font-size:14px;
+  line-height:1.35;
+  vertical-align:middle;
+  text-align:center;
+  font-weight:bold;
+}
+
+/* TABLE DATA */
 td{
   border:1px solid #000;
   padding:6px 10px;
@@ -39,16 +51,19 @@ td{
   word-break:break-word;
 }
 
+th:nth-child(1),
 td:nth-child(1){
   width:30%;
   text-align:center;
 }
 
+th:nth-child(2),
 td:nth-child(2){
   width:27%;
   text-align:left;
 }
 
+th:nth-child(3),
 td:nth-child(3){
   width:43%;
   text-align:left;
@@ -86,11 +101,22 @@ li{
 
 <h3 id="pageTitle">पंडाल मिस्त्री</h3>
 
-<table id="mainTable"></table>
+<table id="mainTable">
+
+  <!-- TABLE HEADER -->
+  <tr>
+    <th>तारीख</th>
+    <th>काम</th>
+    <th>जगह</th>
+  </tr>
+
+</table>
+
 
 <div class="noteBox" id="noteBox">
   <ul id="noteList"></ul>
 </div>
+
 
 <a href="pandal.html" class="back">⬅ वापस जाए</a>
 
@@ -105,7 +131,9 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 
 
-/* Slot प्राप्त करें */
+/* =========================
+   SLOT प्राप्त करें
+========================= */
 
 const params =
   new URLSearchParams(window.location.search);
@@ -121,6 +149,7 @@ const slot =
 const nameRef =
   collection(db, "pandal_names");
 
+
 onSnapshot(
   nameRef,
 
@@ -128,12 +157,14 @@ onSnapshot(
 
     let currentName = "";
 
+
     snapshot.forEach(item => {
 
       if(item.id === String(slot)){
 
         const data =
           item.data();
+
 
         if(
           data.name &&
@@ -155,8 +186,9 @@ onSnapshot(
       document.title =
         currentName;
 
-      document.getElementById("pageTitle")
-        .innerText =
+      document.getElementById(
+        "pageTitle"
+      ).innerText =
         currentName;
 
     }else{
@@ -164,8 +196,9 @@ onSnapshot(
       document.title =
         "पंडाल मिस्त्री";
 
-      document.getElementById("pageTitle")
-        .innerText =
+      document.getElementById(
+        "pageTitle"
+      ).innerText =
         "पंडाल मिस्त्री";
 
     }
@@ -180,6 +213,7 @@ onSnapshot(
     );
 
   }
+
 );
 
 
@@ -209,6 +243,10 @@ onSnapshot(
         doc.data();
 
 
+      /* =========================
+         MAIN TABLE DATA
+      ========================= */
+
       if(
         (d.date && d.date !== "-") ||
         (d.work && d.work.trim() !== "") ||
@@ -234,6 +272,10 @@ onSnapshot(
       }
 
 
+      /* =========================
+         NOTES DATA
+      ========================= */
+
       if(
         (d.note || "").trim() !== ""
       ){
@@ -253,9 +295,14 @@ onSnapshot(
     });
 
 
+    /* =========================
+       SORT DATA
+    ========================= */
+
     rows.sort(
       (a,b) => a.time - b.time
     );
+
 
     notes.sort(
       (a,b) => a.time - b.time
@@ -264,9 +311,22 @@ onSnapshot(
 
     /* =========================
        TABLE
+       HEADER हमेशा रहेगा
     ========================= */
 
-    let mainHTML = "";
+    let mainHTML = `
+
+      <tr>
+
+        <th>तारीख</th>
+
+        <th>काम</th>
+
+        <th>जगह</th>
+
+      </tr>
+
+    `;
 
 
     rows.forEach(d => {
@@ -314,6 +374,10 @@ onSnapshot(
     ).innerHTML =
       noteHTML;
 
+
+    /* =========================
+       NOTE BOX SHOW / HIDE
+    ========================= */
 
     if(noteHTML.trim() !== ""){
 
