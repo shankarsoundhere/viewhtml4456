@@ -80,49 +80,7 @@ body{
 💡 लाइट मिस्त्री
 </div>
 
-<div class="container" id="lightList">
-
-<a class="card"
-href="light-view.html?slot=1"
-data-slot="1"></a>
-
-<a class="card"
-href="light-view.html?slot=2"
-data-slot="2"></a>
-
-<a class="card"
-href="light-view.html?slot=3"
-data-slot="3"></a>
-
-<a class="card"
-href="light-view.html?slot=4"
-data-slot="4"></a>
-
-<a class="card"
-href="light-view.html?slot=5"
-data-slot="5"></a>
-
-<a class="card"
-href="light-view.html?slot=6"
-data-slot="6"></a>
-
-<a class="card"
-href="light-view.html?slot=7"
-data-slot="7"></a>
-
-<a class="card"
-href="light-view.html?slot=8"
-data-slot="8"></a>
-
-<a class="card"
-href="light-view.html?slot=9"
-data-slot="9"></a>
-
-<a class="card"
-href="light-view.html?slot=10"
-data-slot="10"></a>
-
-</div>
+<div class="container" id="lightList"></div>
 
 <a class="back" href="index.html">
 ⬅ वापस जाए
@@ -137,8 +95,8 @@ import {
 } from "./firebase.js";
 
 
-const cards =
-document.querySelectorAll(".card");
+const lightList =
+document.getElementById("lightList");
 
 
 onSnapshot(
@@ -154,8 +112,13 @@ onSnapshot(
             const slot =
             Number(item.id);
 
-            if(slot < 1 || slot > 10)
+            // केवल valid positive slot
+            if(
+                !Number.isInteger(slot) ||
+                slot < 1
+            ){
                 return;
+            }
 
             const data =
             item.data();
@@ -173,28 +136,34 @@ onSnapshot(
         });
 
 
-        cards.forEach(card=>{
+        // पुराने cards हटाएं
+        lightList.innerHTML = "";
 
-            const slot =
-            Number(card.dataset.slot);
 
-            if(names[slot]){
+        // Slot को 1,2,3,4... क्रम में लगाएं
+        const slots =
+        Object.keys(names)
+        .map(Number)
+        .sort((a,b)=>a-b);
 
-                card.textContent =
-                names[slot];
 
-                card.href =
-                "light-view.html?slot=" + slot;
+        slots.forEach(slot=>{
 
-                card.style.display =
-                "block";
+            const card =
+            document.createElement("a");
 
-            }else{
+            card.className = "card";
 
-                card.style.display =
-                "none";
+            card.href =
+            "light-view.html?slot=" + slot;
 
-            }
+            card.textContent =
+            names[slot];
+
+            card.style.display =
+            "block";
+
+            lightList.appendChild(card);
 
         });
 
