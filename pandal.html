@@ -34,7 +34,7 @@ body{
 }
 
 .card{
-    display:none;
+    display:block;
     text-decoration:none;
     color:#212529;
     background:white;
@@ -80,49 +80,7 @@ body{
 पंडाल मिस्त्री
 </div>
 
-<div class="container" id="pandalList">
-
-<a class="card"
-href="pandal-view.html?slot=1"
-data-slot="1"></a>
-
-<a class="card"
-href="pandal-view.html?slot=2"
-data-slot="2"></a>
-
-<a class="card"
-href="pandal-view.html?slot=3"
-data-slot="3"></a>
-
-<a class="card"
-href="pandal-view.html?slot=4"
-data-slot="4"></a>
-
-<a class="card"
-href="pandal-view.html?slot=5"
-data-slot="5"></a>
-
-<a class="card"
-href="pandal-view.html?slot=6"
-data-slot="6"></a>
-
-<a class="card"
-href="pandal-view.html?slot=7"
-data-slot="7"></a>
-
-<a class="card"
-href="pandal-view.html?slot=8"
-data-slot="8"></a>
-
-<a class="card"
-href="pandal-view.html?slot=9"
-data-slot="9"></a>
-
-<a class="card"
-href="pandal-view.html?slot=10"
-data-slot="10"></a>
-
-</div>
+<div class="container" id="pandalList"></div>
 
 <a class="back" href="index.html">
 ⬅ वापस जाए
@@ -138,12 +96,13 @@ import {
 } from "./firebase.js";
 
 
-const cards =
-document.querySelectorAll(".card");
+const list =
+document.getElementById("pandalList");
 
 
 /* =========================
    FIREBASE PANDAL NAMES
+   जितने भी slot हैं सभी आएंगे
 ========================= */
 
 onSnapshot(
@@ -152,7 +111,10 @@ onSnapshot(
 
     (snapshot)=>{
 
-        const names = {};
+        list.innerHTML = "";
+
+
+        const names = [];
 
 
         snapshot.forEach(item=>{
@@ -160,22 +122,24 @@ onSnapshot(
             const slot =
                 Number(item.id);
 
-
-            if(slot < 1 || slot > 10)
-                return;
-
-
             const data =
                 item.data();
 
 
             if(
+                !isNaN(slot) &&
                 data.name &&
                 data.name.trim() !== ""
             ){
 
-                names[slot] =
-                    data.name.trim();
+                names.push({
+
+                    slot: slot,
+
+                    name:
+                        data.name.trim()
+
+                });
 
             }
 
@@ -183,35 +147,39 @@ onSnapshot(
 
 
         /* =========================
-           SHOW FIREBASE NAMES
+           SLOT NUMBER के अनुसार SORT
         ========================= */
 
-        cards.forEach(card=>{
-
-            const slot =
-                Number(card.dataset.slot);
-
-
-            if(names[slot]){
-
-                card.textContent =
-                    names[slot];
+        names.sort(
+            (a,b) =>
+                a.slot - b.slot
+        );
 
 
-                card.href =
-                    "pandal-view.html?slot=" +
-                    slot;
+        /* =========================
+           CARDS बनाना
+        ========================= */
+
+        names.forEach(item=>{
+
+            const card =
+                document.createElement("a");
 
 
-                card.style.display =
-                    "block";
+            card.className =
+                "card";
 
-            }else{
 
-                card.style.display =
-                    "none";
+            card.href =
+                "pandal-view.html?slot=" +
+                item.slot;
 
-            }
+
+            card.textContent =
+                item.name;
+
+
+            list.appendChild(card);
 
         });
 
