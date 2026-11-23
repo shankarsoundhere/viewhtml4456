@@ -35,6 +35,21 @@ ul{margin:0;padding-left:18px;text-align:left}
 .green{color:green}
 .red{color:#dc3545}
 .empty{text-align:center;color:#777;padding:12px}
+
+.totalBtn{
+width:100%;
+margin-top:20px;
+padding:14px;
+border:0;
+border-radius:7px;
+background:#176b2d;
+color:white;
+font-size:17px;
+font-weight:bold;
+cursor:pointer;
+}
+.totalBtn:active{background:#0d5020}
+
 @media(max-width:800px){
 body{display:block;padding:8px}
 .page{width:100%;min-height:auto;padding:10px;box-shadow:none}
@@ -46,7 +61,7 @@ td,th{padding:5px 2px}
 @page{size:A4;margin:8mm}
 body{background:white;padding:0;display:block}
 .page{width:100%;min-height:auto;padding:0;box-shadow:none}
-.back,.modal{display:none!important}
+.back,.modal,.totalBtn{display:none!important}
 }
 </style>
 </head>
@@ -71,6 +86,10 @@ body{background:white;padding:0;display:block}
 <div id="workerList" class="workerList">
 <div class="empty">लेबर लोड हो रहे हैं...</div>
 </div>
+
+<button class="totalBtn" onclick="openTotalAccount()">
+📊 सभी लेबर का हिसाब
+</button>
 
 <div class="back">
 <a href="index.html">⬅ वापस जाए</a>
@@ -102,6 +121,24 @@ body{background:white;padding:0;display:block}
 <div id="paymentEmpty" class="empty" style="display:none">
 अभी कोई भुगतान या एडवांस नहीं है।
 </div>
+</div>
+</div>
+
+<!-- ALL WORKERS TOTAL ACCOUNT MODAL -->
+<div class="modal" id="totalModal">
+<div class="modalBox">
+<button class="close" onclick="closeTotalAccount()">बंद करें ✕</button>
+<h3>📊 सभी लेबर का कुल हिसाब</h3>
+
+<div class="summary">
+<div>कुल मजदूरी<strong id="allWage">₹0</strong></div>
+<div>कुल Advance<strong id="allAdvance" class="green">₹0</strong></div>
+<div>अब तक भुगतान<strong id="allPayment" class="green">₹0</strong></div>
+<div>कुल दिया गया<strong id="allGiven" class="green">₹0</strong></div>
+<div style="grid-column:1/-1">अभी और देना है<strong id="allBalance" class="red">₹0</strong></div>
+</div>
+
+<p class="empty">यह सभी मजदूरों का मिला-जुला हिसाब है।</p>
 </div>
 </div>
 
@@ -156,6 +193,7 @@ attendance.sort((a,b)=>sortDate(a.date)-sortDate(b.date));
 renderMainTable();
 renderWorkers();
 if(selectedWorker)showAccount(selectedWorker.id);
+if(document.getElementById("totalModal").style.display==="block")renderTotalAccount();
 });
 
 /* NOTES */
@@ -184,6 +222,7 @@ hidden:x.hidden===true
 workers.sort((a,b)=>a.name.localeCompare(b.name,"hi"));
 renderWorkers();
 if(selectedWorker)showAccount(selectedWorker.id);
+if(document.getElementById("totalModal").style.display==="block")renderTotalAccount();
 });
 
 /* ADVANCE AND PAYMENT RECORDS */
@@ -207,6 +246,7 @@ let diff=sortDate(a.date)-sortDate(b.date);
 return diff||Number(a.time)-Number(b.time);
 });
 if(selectedWorker)showAccount(selectedWorker.id);
+if(document.getElementById("totalModal").style.display==="block")renderTotalAccount();
 });
 
 /* MAIN TABLE */
@@ -364,9 +404,77 @@ document.getElementById("paymentEmpty").style.display=
 workerPayments.length?"none":"block";
 }
 
+/* ALL WORKERS TOTAL ACCOUNT */
+window.openTotalAccount=function(){
+document.getElementById("totalModal").style.display="block";
+renderTotalAccount();
+};
+
+window.closeTotalAccount=function(){
+document.getElementById("totalModal").style.display="none";
+};
+
+function renderTotalAccount(){
+let groups={};
+
+workers.forEach(w=>{
+let key=normalizeName(w.name);
+if(!key)return;
+
+if(!groups[key]){
+groups[key]={
+name:w.name,
+aliases:[...w.aliases],
+memberIds:[w.id]
+};
+}else{
+groups[key].memberIds.push(w.id);
+w.aliases.forEach(a=>{
+if(!groups[key].aliases.some(x=>normalizeName(x)===normalizeName(a))){
+groups[key].aliases.push(a);
+}
+});
+}
+});
+
+let totalWage=0;
+
+Object.values(groups).forEach(w=>{
+let workDates=new Set();
+attendance.forEach(row=>{
+if(matchesWorker(row,w))workDates.add(row.date);
+});
+totalWage+=workDates.size*DAILY_RATE;
+});
+
+let totalAdvance=payments
+.filter(p=>p.type==="Advance")
+.reduce((sum,p)=>sum+p.amount,0);
+
+let totalPayment=payments
+.filter(p=>p.type!=="Advance")
+.reduce((sum,p)=>sum+p.amount,0);
+
+let totalGiven=totalAdvance+totalPayment;
+let balance=totalWage-totalGiven;
+
+document.getElementById("allWage").textContent=money(totalWage);
+document.getElementById("allAdvance").textContent=money(totalAdvance);
+document.getElementById("allPayment").textContent=money(totalPayment);
+document.getElementById("allGiven").textContent=money(totalGiven);
+
+let balanceElement=document.getElementById("allBalance");
+balanceElement.textContent=balance>=0?money(balance):money(Math.abs(balance))+" जमा";
+balanceElement.className=balance>=0?"green":"red";
+}
+
 /* MODAL CLOSE */
 document.getElementById("accountModal").addEventListener("click",e=>{
 if(e.target.id==="accountModal")closeAccount();
+});
+
+document.getElementById("totalModal").addEventListener("click",e=>{
+if(e.target.id==="totalModal")closeTotalAccount();
 });
 </script>
 
