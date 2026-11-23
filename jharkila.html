@@ -9,113 +9,27 @@
 
 <style>
 *{box-sizing:border-box}
-body{
-font-family:Arial,sans-serif;
-background:#dcdde1;
-margin:0;
-padding:15px;
-display:flex;
-justify-content:center;
-align-items:flex-start;
-overflow-x:hidden;
-}
-.page{
-width:210mm;
-max-width:100%;
-min-height:297mm;
-background:white;
-padding:12mm;
-box-shadow:0 0 10px #0003;
-}
+body{font-family:Arial,sans-serif;background:#dcdde1;margin:0;padding:15px;display:flex;justify-content:center;align-items:flex-start;overflow-x:hidden}
+.page{width:210mm;max-width:100%;min-height:297mm;background:white;padding:12mm;box-shadow:0 0 10px #0003}
 h3{text-align:center;margin-bottom:10px}
 h4{margin-bottom:8px}
-table{
-border-collapse:collapse;
-width:100%;
-table-layout:fixed;
-font-size:13px;
-}
-td,th{
-border:1px solid black;
-padding:6px 3px;
-text-align:center;
-word-break:break-word;
-}
+table{border-collapse:collapse;width:100%;table-layout:fixed;font-size:13px}
+td,th{border:1px solid black;padding:6px 3px;text-align:center;word-break:break-word}
 .head td,.head th{font-weight:bold;background:#eee}
-#mainTable td:first-child{
-width:85px;
-white-space:nowrap;
-font-size:12px;
-}
-.noteBox{
-border:1px solid black;
-padding:8px;
-min-height:40px;
-margin-top:10px;
-}
+#mainTable td:first-child{width:85px;white-space:nowrap;font-size:12px}
+.noteBox{border:1px solid black;padding:8px;min-height:40px;margin-top:10px}
 ul{margin:0;padding-left:18px;text-align:left}
-.workerList{
-display:grid;
-grid-template-columns:repeat(2,minmax(0,1fr));
-gap:8px;
-margin-top:10px;
-}
-.workerBtn{
-border:1px solid #28a745;
-background:#f4fff6;
-color:#176b2d;
-padding:11px 8px;
-border-radius:6px;
-font-size:14px;
-font-weight:bold;
-text-align:left;
-cursor:pointer;
-}
+.workerList{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:10px}
+.workerBtn{border:1px solid #28a745;background:#f4fff6;color:#176b2d;padding:11px 8px;border-radius:6px;font-size:14px;font-weight:bold;text-align:left;cursor:pointer}
 .workerBtn:active{background:#d9f5df}
 .back{text-align:center;margin-top:15px}
 .back a{color:#176b2d}
-.modal{
-display:none;
-position:fixed;
-inset:0;
-background:#0009;
-z-index:10;
-padding:12px;
-overflow-y:auto;
-}
-.modalBox{
-background:white;
-max-width:500px;
-width:100%;
-margin:25px auto;
-padding:15px;
-border-radius:8px;
-}
-.close{
-float:right;
-border:0;
-background:#dc3545;
-color:white;
-padding:7px 12px;
-border-radius:5px;
-}
-.summary{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:8px;
-margin:15px 0;
-}
-.summary div{
-background:#f1f3f5;
-padding:10px;
-border-radius:5px;
-text-align:center;
-}
-.summary strong{
-display:block;
-font-size:18px;
-margin-top:5px;
-}
+.modal{display:none;position:fixed;inset:0;background:#0009;z-index:10;padding:12px;overflow-y:auto}
+.modalBox{background:white;max-width:500px;width:100%;margin:25px auto;padding:15px;border-radius:8px}
+.close{float:right;border:0;background:#dc3545;color:white;padding:7px 12px;border-radius:5px}
+.summary{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:15px 0}
+.summary div{background:#f1f3f5;padding:10px;border-radius:5px;text-align:center}
+.summary strong{display:block;font-size:18px;margin-top:5px}
 .accountTable{font-size:12px;margin-top:10px}
 .accountTable th{background:#eee}
 .green{color:green}
@@ -123,12 +37,7 @@ margin-top:5px;
 .empty{text-align:center;color:#777;padding:12px}
 @media(max-width:800px){
 body{display:block;padding:8px}
-.page{
-width:100%;
-min-height:auto;
-padding:10px;
-box-shadow:none;
-}
+.page{width:100%;min-height:auto;padding:10px;box-shadow:none}
 table{font-size:11px}
 td,th{padding:5px 2px}
 .workerList{grid-template-columns:1fr 1fr}
@@ -144,7 +53,6 @@ body{background:white;padding:0;display:block}
 
 <body>
 <div class="page">
-
 <h3>👷 झारकिला लेबर</h3>
 
 <table id="mainTable">
@@ -167,7 +75,6 @@ body{background:white;padding:0;display:block}
 <div class="back">
 <a href="index.html">⬅ वापस जाए</a>
 </div>
-
 </div>
 
 <!-- WORKER ACCOUNT MODAL -->
@@ -179,18 +86,16 @@ body{background:white;padding:0;display:block}
 <div class="summary">
 <div>कुल काम के दिन<strong id="totalDays">0</strong></div>
 <div>कुल मजदूरी<strong id="totalWage">₹0</strong></div>
-<div>कुल भुगतान<strong id="totalPaid" class="green">₹0</strong></div>
+<div>Advance<strong id="totalAdvance" class="green">₹0</strong></div>
+<div>अब तक भुगतान<strong id="totalPayment" class="green">₹0</strong></div>
+<div>कुल दिया गया<strong id="totalGiven" class="green">₹0</strong></div>
 <div>बाकी रकम<strong id="balance" class="red">₹0</strong></div>
 </div>
 
 <h4>📒 भुगतान / एडवांस हिसाब</h4>
 <table class="accountTable">
 <thead>
-<tr>
-<th>तारीख</th>
-<th>विवरण</th>
-<th>रकम</th>
-</tr>
+<tr><th>तारीख</th><th>विवरण</th><th>रकम</th></tr>
 </thead>
 <tbody id="paymentList"></tbody>
 </table>
@@ -213,13 +118,13 @@ let payments=[];
 let selectedWorker=null;
 
 function safe(value){
-return String(value ?? "").replace(/[&<>"']/g,c=>({
-"&":"&amp;",
-"<":"&lt;",
-">":"&gt;",
-'"':"&quot;",
-"'":"&#39;"
-}[c]));
+return String(value??"").replace(/[&<>"']/g,c=>({
+"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+})[c]);
+}
+
+function normalizeName(value){
+return String(value||"").trim().replace(/\s+/g," ").toLocaleLowerCase("hi");
 }
 
 function sortDate(d){
@@ -243,12 +148,8 @@ snap.forEach(d=>{
 let x=d.data();
 attendance.push({
 date:x.date||"",
-n1:x.n1||"",
-n2:x.n2||"",
-n3:x.n3||"",
-n4:x.n4||"",
-n5:x.n5||"",
-n6:x.n6||""
+n1:x.n1||"",n2:x.n2||"",n3:x.n3||"",
+n4:x.n4||"",n5:x.n5||"",n6:x.n6||""
 });
 });
 attendance.sort((a,b)=>sortDate(a.date)-sortDate(b.date));
@@ -276,7 +177,8 @@ workers.push({
 id:d.id,
 name:x.name||"",
 aliases:Array.isArray(x.aliases)?x.aliases:[],
-active:x.active!==false
+active:x.active!==false,
+hidden:x.hidden===true
 });
 });
 workers.sort((a,b)=>a.name.localeCompare(b.name,"hi"));
@@ -330,12 +232,38 @@ html+=`
 document.getElementById("mainTable").innerHTML=html;
 }
 
-/* WORKER LIST */
+/* WORKER LIST - HIDDEN WORKERS EXCLUDED */
 function renderWorkers(){
-let active=workers.filter(w=>w.active);
 let html="";
+let groups={};
 
-active.forEach(w=>{
+workers.forEach(w=>{
+let key=normalizeName(w.name);
+if(!key)return;
+
+if(!groups[key]){
+groups[key]={
+...w,
+memberIds:[w.id],
+aliases:[...w.aliases],
+hidden:w.hidden
+};
+}else{
+groups[key].memberIds.push(w.id);
+w.aliases.forEach(a=>{
+if(!groups[key].aliases.some(x=>normalizeName(x)===normalizeName(a))){
+groups[key].aliases.push(a);
+}
+});
+if(w.hidden)groups[key].hidden=true;
+}
+});
+
+let visible=Object.values(groups).filter(w=>
+w.active!==false && !w.hidden
+);
+
+visible.forEach(w=>{
 html+=`
 <button class="workerBtn" onclick="openAccount('${safe(w.id)}')">
 👤 ${safe(w.name)}
@@ -343,18 +271,18 @@ html+=`
 });
 
 document.getElementById("workerList").innerHTML=
-html||'<div class="empty">अभी कोई लेबर नहीं जोड़ा गया है।</div>';
+html||'<div class="empty">अभी कोई लेबर नहीं है।</div>';
 }
 
 /* MATCH WORKER NAME */
 function matchesWorker(row,w){
 let names=[w.name,...w.aliases]
 .filter(Boolean)
-.map(n=>String(n).trim().toLowerCase());
+.map(normalizeName);
 
 return ["n1","n2","n3","n4","n5","n6"].some(key=>{
-let value=String(row[key]||"").trim().toLowerCase();
-return value && names.includes(value);
+let value=normalizeName(row[key]);
+return value&&names.includes(value);
 });
 }
 
@@ -378,39 +306,55 @@ if(!w)return;
 
 selectedWorker=w;
 
+let group=workers.filter(x=>x.name&&normalizeName(x.name)===normalizeName(w.name));
+let memberIds=group.map(x=>x.id);
+
+let aliases=[];
+group.forEach(x=>{
+[x.name,...x.aliases].forEach(a=>{
+if(a&&!aliases.some(v=>normalizeName(v)===normalizeName(a)))aliases.push(a);
+});
+});
+
+let groupedWorker={...w,aliases};
 let workDates=new Set();
 
 attendance.forEach(row=>{
-if(matchesWorker(row,w)){
-workDates.add(row.date);
-}
+if(matchesWorker(row,groupedWorker))workDates.add(row.date);
 });
 
 let days=workDates.size;
 let wage=days*DAILY_RATE;
 
-let workerPayments=payments.filter(p=>
-p.workerId===w.id
-);
+let workerPayments=payments.filter(p=>memberIds.includes(p.workerId));
 
-let paid=workerPayments.reduce((sum,p)=>sum+p.amount,0);
-let balance=wage-paid;
+let advance=workerPayments.filter(p=>p.type==="Advance")
+.reduce((sum,p)=>sum+p.amount,0);
 
-document.getElementById("accountName").textContent="👤 "+w.name;
-document.getElementById("totalDays").textContent=days;
+let paid=workerPayments.filter(p=>p.type!=="Advance")
+.reduce((sum,p)=>sum+p.amount,0);
+
+let totalGiven=advance+paid;
+let balance=wage-totalGiven;
+
+document.getElementById("accountName").textContent="👤 "+w.name+" का हिसाब";
+document.getElementById("totalDays").textContent=days+" दिन";
 document.getElementById("totalWage").textContent=money(wage);
-document.getElementById("totalPaid").textContent=money(paid);
-document.getElementById("balance").textContent=money(balance);
+document.getElementById("totalAdvance").textContent=money(advance);
+document.getElementById("totalPayment").textContent=money(paid);
+document.getElementById("totalGiven").textContent=money(totalGiven);
+
+let balanceElement=document.getElementById("balance");
+balanceElement.textContent=balance>=0?money(balance):money(Math.abs(balance))+" जमा";
+balanceElement.className=balance>=0?"green":"red";
 
 let html="";
 workerPayments.forEach(p=>{
 html+=`
 <tr>
 <td>${safe(p.date)}</td>
-<td>
-${safe(p.type)}
-${p.note?'<br>'+safe(p.note):""}
-</td>
+<td>${safe(p.type==="Advance"?"Advance":"भुगतान")}
+${p.note?"<br>"+safe(p.note):""}</td>
 <td>${money(p.amount)}</td>
 </tr>`;
 });
