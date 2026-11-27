@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bank Account Slip</title>
+<style>
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f3f4f6;
+    color: #111827;
+    padding: 24px 12px;
+  }
+
+  .slip-container {
+    max-width: 470px;
+    margin: 0 auto;
+  }
+
+  /* ऊपर बैंक चुनने के लिए टैब */
+  .stub-nav {
+    display: flex;
+    gap: 6px;
+    margin-bottom: -1px;
+    padding: 0 8px;
+  }
+
+  .stub-btn {
+    flex: 1;
+    padding: 10px 6px;
+    background: #e5e7eb;
+    border: 1px solid #d1d5db;
+    border-bottom: none;
+    border-radius: 8px 8px 0 0;
+    font-size: 13px;
+    font-weight: 700;
+    color: #4b5563;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    transition: background 0.15s;
+  }
+
+  .stub-btn:hover {
+    background: #f9fafb;
+  }
+
+  .stub-btn.active {
+    background: #ffffff;
+    color: #1e3a8a;
+    border-color: #d1d5db;
+    padding-top: 12px;
+  }
+
+  /* सफ़ेद स्लिप कार्ड */
+  .cheque-leaf {
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    padding: 22px 20px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+    position: relative;
+  }
+
+  /* बैंक का नाम और कोड हेडर */
+  .leaf-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #1e3a8a;
+    padding-bottom: 14px;
+    margin-bottom: 18px;
+  }
+
+  .bank-title-group h1 {
+    font-size: 18px;
+    font-weight: 800;
+    color: #1e3a8a;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+
+  .bank-title-group span {
+    font-size: 11.5px;
+    color: #6b7280;
+    display: block;
+    margin-top: 2px;
+  }
+
+  .micr-badge {
+    font-family: "Courier New", Courier, monospace;
+    font-size: 13px;
+    font-weight: 700;
+    color: #1e3a8a;
+    border: 1.5px solid #1e3a8a;
+    border-radius: 4px;
+    padding: 4px 9px;
+    background: #eff6ff;
+  }
+
+  /* जानकारी वाले बॉक्स */
+  .line-field {
+    margin-bottom: 16px;
+  }
+
+  .line-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    margin-bottom: 6px;
+    display: block;
+  }
+
+  .line-box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-bottom: 2px solid #9ca3af;
+    border-radius: 4px;
+    padding: 10px 12px;
+    gap: 10px;
+  }
+
+  .line-text {
+    font-size: 15px;
+    font-weight: 600;
+    color: #111827;
+  }
+
+  .cheque-font {
+    font-family: "Courier New", Courier, monospace;
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: #000000;
+    word-break: break-all;
+  }
+
+  .btn-stamp {
+    background: #1e3a8a;
+    color: #ffffff;
+    border: none;
+    padding: 6px 12px;
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+
+  .btn-stamp:active {
+    opacity: 0.85;
+  }
+
+  .btn-stamp.done {
+    background: #15803d;
+  }
+
+  /* डॉटेड लाइन */
+  .tear-line {
+    border-top: 2px dashed #e5e7eb;
+    margin: 20px -20px 16px -20px;
+    position: relative;
+  }
+
+  .bottom-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .serial-no {
+    font-family: "Courier New", Courier, monospace;
+    font-size: 12px;
+    color: #9ca3af;
+    letter-spacing: 1px;
+  }
+
+  .btn-copy-slip {
+    background: #ffffff;
+    border: 1.5px solid #1e3a8a;
+    color: #1e3a8a;
+    padding: 8px 14px;
+    font-size: 12.5px;
+    font-weight: 700;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.15s;
+  }
+
+  .btn-copy-slip:hover {
+    background: #eff6ff;
+  }
+
+  .btn-copy-slip:active {
+    background: #1e3a8a;
+    color: #ffffff;
+  }
+</style>
+</head>
+<body>
+
+<div class="slip-container">
+  <div class="stub-nav" id="stubNav"></div>
+  <div class="cheque-leaf" id="chequeLeaf"></div>
+</div>
+
+<script>
+const bankSlips = [
+  {
+    short: "PNB",
+    name: "Punjab National Bank",
+    holder: "SHANKAR GUPTA",
+    account: "393600100340463",
+    ifsc: "PUNB0393600",
+    serial: "SHANKAR SOUND"
+  },
+  {
+    short: "BOB",
+    name: "Bank of Baroda",
+    holder: "REKHA DEVI",
+    account: "30430100017002",
+    ifsc: "BARB0LAKHIS",
+    serial: "SHANKAR SOUND"
+  }
+];
+
+let selectedIdx = 0;
+
+function renderSlip() {
+  document.getElementById("stubNav").innerHTML = bankSlips.map((b, i) => `
+    <button class="stub-btn ${selectedIdx === i ? 'active' : ''}" onclick="pickSlip(${i})">
+      ${b.short}
+    </button>
+  `).join("");
+
+  const b = bankSlips[selectedIdx];
+  document.getElementById("chequeLeaf").innerHTML = `
+    <div class="leaf-header">
+      <div class="bank-title-group">
+        <h1>${b.name}</h1>
+        <span>Account Information Slip</span>
+      </div>
+      <div class="micr-badge">${b.short}</div>
+    </div>
+
+    <div class="line-field">
+      <span class="line-label">Account Holder Name (खाताधारक)</span>
+      <div class="line-box">
+        <span class="line-text">${b.holder}</span>
+      </div>
+    </div>
+
+    <div class="line-field">
+      <span class="line-label">Account Number (खाता संख्या)</span>
+      <div class="line-box">
+        <span class="cheque-font">${b.account}</span>
+        <button class="btn-stamp" onclick="copyField('${b.account}', this)">COPY</button>
+      </div>
+    </div>
+
+    <div class="line-field">
+      <span class="line-label">IFSC Code</span>
+      <div class="line-box">
+        <span class="cheque-font">${b.ifsc}</span>
+        <button class="btn-stamp" onclick="copyField('${b.ifsc}', this)">COPY</button>
+      </div>
+    </div>
+
+    <div class="tear-line"></div>
+
+    <div class="bottom-bar">
+      <span class="serial-no">⑆ ${b.serial} ⑆</span>
+      <button class="btn-copy-slip" onclick="copyEntireSlip(this)">
+        पूरी स्लिप कॉपी करें
+      </button>
+    </div>
+  `;
+}
+
+function pickSlip(i) {
+  selectedIdx = i;
+  renderSlip();
+}
+
+function copyToClip(text, doneFn) {
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(text).then(doneFn);
+  } else {
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand("copy");
+    ta.remove();
+    doneFn();
+  }
+}
+
+function copyField(val, btn) {
+  copyToClip(val, () => {
+    btn.innerText = "COPIED";
+    btn.classList.add("done");
+    setTimeout(() => {
+      btn.innerText = "COPY";
+      btn.classList.remove("done");
+    }, 1200);
+  });
+}
+
+function copyEntireSlip(btn) {
+  const b = bankSlips[selectedIdx];
+  const msg = `Bank: ${b.name}\nName: ${b.holder}\nA/c No: ${b.account}\nIFSC: ${b.ifsc}`;
+  copyToClip(msg, () => {
+    const prev = btn.innerText;
+    btn.innerText = "कॉपी हो गया ✓";
+    setTimeout(() => {
+      btn.innerText = prev;
+    }, 1400);
+  });
+}
+
+renderSlip();
+</script>
+</body>
+</html>
