@@ -80,7 +80,7 @@ justify-content: center;
 font-size: 28px;
 box-shadow: 0 4px 10px rgba(0,0,0,0.2);
 cursor: pointer;
-user-select: none; /* डबल क्लिक पर टेक्स्ट सेलेक्ट होने से रोकता है */
+user-select: none;
 transition: 0.2s;
 }
 
@@ -136,8 +136,8 @@ margin:auto;
 
 </div>
 
-<!-- BANK LOGO (डबल क्लिक करने पर bank.html खुलेगा) -->
-<div class="bank-icon" ondblclick="openBankPage()" title="Double click for Bank">
+<!-- BANK LOGO (सिंगल क्लिक करने पर bank.html खुलेगा) -->
+<div class="bank-icon" onclick="openBankPage()" title="Click for Bank">
 💰
 </div>
 
